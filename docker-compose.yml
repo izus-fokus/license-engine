@@ -1,0 +1,21 @@
+version: '3'
+services:
+    fossology:
+        container_name: fossology
+        image: fossology/fossology:latest
+        ports:
+            - 8081:80
+        networks:
+            - resus
+    license-engine:
+        container_name: license-engine
+        build: .
+        ports:
+            - 9000:9000
+        networks:
+            - resus
+        environment:
+            - FOSSOLOGY_ENDPOINT_BASE_PATH=http://fossology:80
+networks:
+  resus:
+    driver: bridge
