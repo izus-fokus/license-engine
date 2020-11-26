@@ -9,6 +9,10 @@ Run `mvn package` to build a Fat JAR.
 
 Use `docker-compose up` to start the License-Engine as well as a Fossology instance using Docker. 
 
+### Endpoints
+- License-Engine: `http://localhost:9000/swagger-ui.html`
+- Fossology: `http://localhost:8081/repo`
+
 ## Haftungsausschluss
 
 Dies ist ein Forschungsprototyp.
