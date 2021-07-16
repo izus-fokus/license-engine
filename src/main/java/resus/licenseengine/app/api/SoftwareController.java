@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package resus.licenseengine.rest;
+package resus.licenseengine.app.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import resus.licenseengine.LicenseEngine;
+import resus.licenseengine.app.LicenseEngine;
+import resus.licenseengine.app.model.ProcessingStatus;
+import resus.licenseengine.app.model.Software;
 
 @RestController
 @RequestMapping(value = "${server.endpoints.software.path}", consumes = { MediaType.APPLICATION_JSON }, produces = {
@@ -72,23 +74,23 @@ public class SoftwareController {
 			@ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = Void.class)), description = "Some unexpected error occurred. Check the response message for more information.") })
 	public ResponseEntity<String> createSoftware(@RequestBody final Software software) {
 
-		if (!LicenseEngine.isAvailable()) {
+		if (!LicenseEngine.isFossologyAvailable()) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"No running fossology instance for checking the licenses can be found or is accessible. Processing aborted!");
 		}
 
-		String id = software.getId();
+		String softwareID = software.getId();
 
-		logger.debug("Creating new software with ID {}...", id);
+		logger.debug("Creating new software with ID {}...", softwareID);
 
-		if (LicenseEngine.addSoftware(id, software)) {
-			logger.debug("A new software with ID {} was created.", id);
+		if (LicenseEngine.addSoftware(softwareID, software)) {
+			logger.debug("A new software with ID {} was created.", softwareID);
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Location", softwareEndpoint + "/status/" + id);
+			headers.add("Location", softwareEndpoint + "/status/" + softwareID);
 			return new ResponseEntity<String>(headers, HttpStatus.ACCEPTED);
 
 		}
-		logger.debug("A software with ID {} is already available.", id);
+		logger.debug("A software with ID {} is already available.", softwareID);
 		throw new ResponseStatusException(HttpStatus.CONFLICT, "A software with the given ID was already created!");
 
 	}
@@ -97,22 +99,23 @@ public class SoftwareController {
 	 * Returns the processing status of the software with the given ID.
 	 *
 	 */
-	@GetMapping(path = "/status/{id}", consumes = { MediaType.WILDCARD })
+	@GetMapping(path = "/status/{software-id}", consumes = { MediaType.WILDCARD })
 	@Operation(summary = "Returns the processing status of the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "303", headers = {
 					@Header(name = HttpHeaders.LOCATION, description = "URL to the created software resource") }, content = @Content, description = "Finished. Check location header!"),
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
-	public ResponseEntity<ProcessingStatus> getStatus(@PathVariable String id) {
-		logger.debug("Requesting the processing status of the software with ID {}...", id);
+	public ResponseEntity<ProcessingStatus> getStatus(@PathVariable("software-id") String softwareID) {
 
-		Software software = LicenseEngine.getSoftware(id);
+		logger.debug("Requesting the processing status of the software with ID {}...", softwareID);
+
+		Software software = LicenseEngine.getSoftware(softwareID);
 
 		if (software != null) {
 			ProcessingStatus status = software.getStatus();
 			if (status == ProcessingStatus.FINISHED || status == ProcessingStatus.FAILED) {
 				return ResponseEntity.status(HttpStatus.SEE_OTHER)
-						.header(HttpHeaders.LOCATION, softwareEndpoint + "/" + id).build();
+						.header(HttpHeaders.LOCATION, softwareEndpoint + "/" + softwareID).build();
 			}
 
 			return ResponseEntity.ok(software.getStatus());
@@ -124,16 +127,49 @@ public class SoftwareController {
 	 * Returns the software with the given ID.
 	 *
 	 */
-	@GetMapping(path = "/{id}", consumes = { MediaType.WILDCARD })
+	@GetMapping(path = "/{software-id}", consumes = { MediaType.WILDCARD })
 	@Operation(summary = "Returns the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
-	public ResponseEntity<Software> getSoftware(@PathVariable String id) {
-		logger.debug("Requesting the software with ID {}...", id);
+	public ResponseEntity<Software> getSoftware(@PathVariable("software-id") String softwareID) {
 
-		Software software = LicenseEngine.getSoftware(id);
+		logger.debug("Requesting the software with ID {}...", softwareID);
+
+		Software software = LicenseEngine.getSoftware(softwareID);
 		if (software != null) {
 			return ResponseEntity.ok(software);
+		}
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Returns the recommended licenses for the software with the given ID.
+	 *
+	 */
+	@GetMapping(path = "/{software-id}/recommended-licenses", consumes = { MediaType.WILDCARD })
+	@Operation(summary = "Returns the recommended licenses for the software with the given ID.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found"),
+			@ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = Void.class)), description = "Some unexpected error occurred. Check the response message for more information.") })
+	public ResponseEntity<List<String>> getRecommendedLicenses(@PathVariable("software-id") String softwareID) {
+
+		if (!LicenseEngine.isLicenseRecommenderAvailable()) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"No running license recommender service can be found or is accessible. Processing aborted!");
+		}
+
+		logger.debug("Requesting the recommended licenses for the software with ID {}...", softwareID);
+
+		Software software = LicenseEngine.getSoftware(softwareID);
+		if (software != null) {
+			List<String> recommendedLicenses = LicenseEngine.getRecommendedLicenses(software);
+			if (recommendedLicenses != null) {
+				return ResponseEntity.ok(recommendedLicenses);
+			} else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+						"Can't recommend compatible licenses based on the selected licenses: "
+								+ software.getEffectiveLicenses());
+			}
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
@@ -142,12 +178,14 @@ public class SoftwareController {
 	 * Deletes the software with the given ID.
 	 *
 	 */
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{software-id}")
 	@Operation(summary = "Deletes the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "204", content = @Content, description = "No Content") })
-	public ResponseEntity<Void> deleteSoftware(@PathVariable String id) {
-		logger.debug("Deleting the software with ID {}...", id);
-		LicenseEngine.deletesoftware(id);
+	public ResponseEntity<Void> deleteSoftware(@PathVariable("software-id") String softwareID) {
+
+		logger.debug("Deleting the software with ID {}...", softwareID);
+
+		LicenseEngine.deleteSoftware(softwareID);
 		throw new ResponseStatusException(HttpStatus.NO_CONTENT);
 	}
 
@@ -155,16 +193,16 @@ public class SoftwareController {
 	 * Returns all found licenses and files of the software with the given ID.
 	 *
 	 */
-	@GetMapping(path = "/{id}/licenses", consumes = { MediaType.WILDCARD })
-	@Operation(summary = "Returns all found licenses of the software with the given ID.")
+	@GetMapping(path = "/{software-id}/licenses", consumes = { MediaType.WILDCARD })
+	@Operation(summary = "Returns all found licenses and files of the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
-	public ResponseEntity<Map<String, List<String>>> getAllLicensesWithFiles(@PathVariable String id,
+	public ResponseEntity<Map<String, List<String>>> getAllLicensesWithFiles(@PathVariable("software-id") String softwareID,
 			@RequestParam(defaultValue = "true") boolean effective) {
 
-		logger.debug("Requesting the licenses for the software with ID {}...", id);
+		logger.debug("Requesting the licenses for the software with ID {}...", softwareID);
 
-		Software software = LicenseEngine.getSoftware(id);
+		Software software = LicenseEngine.getSoftware(softwareID);
 
 		if (software != null) {
 
@@ -183,50 +221,50 @@ public class SoftwareController {
 	 * ID.
 	 *
 	 */
-	@GetMapping(path = "/{id}/licenses/{license}", consumes = { MediaType.WILDCARD })
+	@GetMapping(path = "/{software-id}/licenses/{license-id}", consumes = { MediaType.WILDCARD })
 	@Operation(summary = "Returns the files with the requested license of the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
-	public ResponseEntity<List<String>> getAllFilesWithLicense(@PathVariable String id, @PathVariable String license,
+	public ResponseEntity<List<String>> getAllFilesWithLicense(@PathVariable("software-id") String softwareID, @PathVariable("license-id") String licenseID,
 			@RequestParam(defaultValue = "true") boolean effective) {
 
-		logger.debug("Requesting the licenses for the software with ID {}...", id);
-		logger.debug("QueryParams for license: {} and effective: {}.", id, license, id);
+		logger.debug("Requesting the licenses for the software with ID {}...", softwareID);
+		logger.debug("QueryParams for license: {} and effective: {}.", softwareID, licenseID, softwareID);
 
-		Software software = LicenseEngine.getSoftware(id);
+		Software software = LicenseEngine.getSoftware(softwareID);
 
 		if (software != null) {
 
-			if (effective && !license.equals("")) {
+			if (effective && !licenseID.equals("")) {
 
-				return ResponseEntity.ok(software.getEffectiveLicensesFilesMapping().get(license));
+				return ResponseEntity.ok(software.getEffectiveLicensesFilesMapping().get(licenseID));
 
 			}
 
-			if (!license.equals("")) {
+			if (!licenseID.equals("")) {
 
-				return ResponseEntity.ok(software.getLicenseFilesMapping().get(license));
+				return ResponseEntity.ok(software.getLicenseFilesMapping().get(licenseID));
 			}
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
 
 	/**
-	 * Adds (a) file(s) to the excluded-files list of the software with the given
+	 * Adds (a) file(s) to the files-excluded list of the software with the given
 	 * ID. The licenses of these files are not used to determine the final license
 	 * of the software.
 	 *
 	 */
-	@PutMapping("/{id}/excluded-files")
-	@Operation(summary = "Adds files to the excluded-files list of the software with the given ID. The licenses of these files are not used to determine the final license of the software.")
+	@PutMapping("/{software-id}/files-excluded")
+	@Operation(summary = "Adds files to be excluded from determining the recommended licenses of the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
-	public ResponseEntity<ArrayList<String>> addExcludedFiles(@PathVariable String id,
+	public ResponseEntity<List<String>> addExcludedFiles(@PathVariable("software-id") String softwareID,
 			@RequestBody ArrayList<String> files) {
 
-		logger.debug("Adding files ({}) to the excluded-files list for the software with ID {}...", files, id);
+		logger.debug("Adding files ({}) to the files-excluded list for the software with ID {}...", files, softwareID);
 
-		Software software = LicenseEngine.getSoftware(id);
+		Software software = LicenseEngine.getSoftware(softwareID);
 
 		if (software != null) {
 			software.getExcludedFiles().addAll(files);
@@ -236,17 +274,17 @@ public class SoftwareController {
 	}
 
 	/**
-	 * Deletes the excluded-files list of the software with the given ID.
+	 * Deletes the files-excluded list of the software with the given ID.
 	 *
 	 */
-	@DeleteMapping(path = "/{id}/excluded-files", consumes = { MediaType.WILDCARD })
-	@Operation(summary = "Deletes the excluded-files list of the software with the given ID.")
+	@DeleteMapping(path = "/{software-id}/files-excluded", consumes = { MediaType.WILDCARD })
+	@Operation(summary = "Deletes the files-excluded list of the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "204", content = @Content, description = "No Content") })
-	public ResponseEntity<Void> deleteExcludedFiles(@PathVariable String id) {
+	public ResponseEntity<Void> deleteExcludedFiles(@PathVariable("software-id") String softwareID) {
 
-		logger.debug("Deleting the excluded-files list for the software with ID {}...", id);
+		logger.debug("Deleting the files-excluded list for the software with ID {}...", softwareID);
 
-		Software software = LicenseEngine.getSoftware(id);
+		Software software = LicenseEngine.getSoftware(softwareID);
 		if (software != null) {
 			software.getExcludedFiles().clear();
 		}
@@ -254,20 +292,20 @@ public class SoftwareController {
 	}
 
 	/**
-	 * Returns the excluded-files list of the software with the given ID.
+	 * Returns the files-excluded list of the software with the given ID.
 	 *
 	 */
-	@GetMapping(path = "/{id}/excluded-files", consumes = { MediaType.WILDCARD })
-	@Operation(summary = "Returns the excluded-files list of the software with the given ID.")
+	@GetMapping(path = "/{software-id}/files-excluded", consumes = { MediaType.WILDCARD })
+	@Operation(summary = "Returns the files-excluded list of the software with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
-	public ResponseEntity<ArrayList<String>> getExcludedFiles(@PathVariable String id) {
+	public ResponseEntity<List<String>> getExcludedFiles(@PathVariable("software-id") String softwareID) {
 
-		logger.debug("Requesting the excluded-files list for the software with ID {}...", id);
+		logger.debug("Requesting the files-excluded list for the software with ID {}...", softwareID);
 
-		Software software = LicenseEngine.getSoftware(id);
+		Software software = LicenseEngine.getSoftware(softwareID);
 		if (software != null) {
-			return ResponseEntity.ok(LicenseEngine.getSoftware(id).getExcludedFiles());
+			return ResponseEntity.ok(LicenseEngine.getSoftware(softwareID).getExcludedFiles());
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}

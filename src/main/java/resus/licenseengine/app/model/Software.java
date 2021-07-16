@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package resus.licenseengine.rest;
+package resus.licenseengine.app.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,16 +26,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 public class Software {
-
-	private static final Logger logger = LoggerFactory.getLogger(Software.class);
 
 	@JsonProperty(required = true)
 	private String id;
@@ -52,7 +47,7 @@ public class Software {
 	@JsonIgnore
 	private Map<String, List<String>> licensesToFilesMapping = new HashMap<String, List<String>>();
 	@JsonIgnore
-	private ArrayList<String> excludedFiles = new ArrayList<String>();
+	private List<String> excludedFiles = new ArrayList<String>();
 
 	@JsonProperty(value = "licenses-all", access = Access.READ_ONLY)
 	public Set<String> getAllLicenses() {
@@ -72,19 +67,21 @@ public class Software {
 	@JsonIgnore
 	public Map<String, List<String>> getEffectiveLicensesFilesMapping() {
 
-		logger.debug("Determining the effective licenses...");
-
 		Map<String, List<String>> effectiveLicensesFilesMapping = deepCopyMap(licensesToFilesMapping);
+		List<String> toRemove = new ArrayList<String>();
 
 		for (Entry<String, List<String>> licensesFilesEntry : effectiveLicensesFilesMapping.entrySet()) {
 			licensesFilesEntry.getValue().removeAll(excludedFiles);
 			if (licensesFilesEntry.getValue().isEmpty()) {
-				effectiveLicensesFilesMapping.remove(licensesFilesEntry.getKey());
+				toRemove.add(licensesFilesEntry.getKey());
 			}
 		}
 
-		return effectiveLicensesFilesMapping;
+		for (String license : toRemove) {
+			effectiveLicensesFilesMapping.remove(license);
+		}
 
+		return effectiveLicensesFilesMapping;
 	}
 
 	/**
@@ -182,23 +179,23 @@ public class Software {
 	/**
 	 * @return the excludedFiles
 	 */
-	public ArrayList<String> getExcludedFiles() {
+	public List<String> getExcludedFiles() {
 		return excludedFiles;
 	}
 
 	/**
 	 * @param excludedFiles the excludedFiles to set
 	 */
-	public void setExcludedFiles(ArrayList<String> excludedFiles) {
+	public void setExcludedFiles(List<String> excludedFiles) {
 		this.excludedFiles = excludedFiles;
 	}
 
-	private static HashMap<String, List<String>> deepCopyMap(Map<String, List<String>> licensesToFilesMapping2) {
+	private static HashMap<String, List<String>> deepCopyMap(Map<String, List<String>> licensesToFilesMapping) {
+
 		HashMap<String, List<String>> copy = new HashMap<>();
-		for (Map.Entry<String, List<String>> entry : licensesToFilesMapping2.entrySet()) {
+		for (Map.Entry<String, List<String>> entry : licensesToFilesMapping.entrySet()) {
 			copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
 		}
 		return copy;
 	}
-
 }

@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package resus.licenseengine.rest;
+package resus.licenseengine.app.model;
 
 public enum ProcessingStatus {
 	QUEUED, UPLOADING, ANALYZING, FINISHED, FAILED

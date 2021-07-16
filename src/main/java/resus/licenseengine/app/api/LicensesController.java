@@ -17,7 +17,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package resus.licenseengine.rest;
+package resus.licenseengine.app.api;
 
 import java.util.Arrays;
 
@@ -25,8 +25,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spdx.html.InvalidLicenseTemplateException;
-import org.spdx.rdfparser.InvalidSPDXAnalysisException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +40,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import resus.licenseengine.spdx.SpdxUtils;
+import resus.licenseengine.app.LicenseEngine;
+import resus.licenseengine.app.model.License;
+import resus.licenseengine.utils.LicenseUtils;
 
 @RestController
 @RequestMapping(value = "${server.endpoints.licenses.path}")
@@ -55,39 +55,65 @@ public class LicensesController {
 	 *
 	 */
 	@GetMapping(produces = { MediaType.APPLICATION_JSON })
-	@Operation(summary = "Returns all available licenseIDs.")
+	@Operation(summary = "Returns all available license IDs.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = String.class))), description = "OK") })
 	public ResponseEntity<String[]> getLicenses() {
 
-		logger.debug("All available licenses are requested.");
+		logger.debug("All available licenses are requested...");
 
-		String[] ls = SpdxUtils.getAllLicenses();
+		String[] ls = LicenseUtils.getAllLicenses();
 		Arrays.sort(ls);
 		return ResponseEntity.ok(ls);
 	}
 
 	/**
-	 * Returns the license text for the license with the given id.
-	 * 
+	 * Returns further information about the license with the given id.
 	 *
 	 */
-	@GetMapping(value = "/{id}", produces = { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
-	@Operation(summary = "Returns the license text as html for the license with the given ID.")
+	@GetMapping(value = "/{license-id}", produces = { MediaType.APPLICATION_JSON })
+	@Operation(summary = "Returns further information about the license with the given ID.")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
-	public ResponseEntity<String> getLicenseTextHTML(@PathVariable("id") String licenseID,
+	public ResponseEntity<License> getLicense(@PathVariable("license-id") String licenseID) {
+
+		logger.debug("Information requested about the license with ID {} ...", licenseID);
+
+		License license = LicenseEngine.getLicense(licenseID);
+
+		if (license != null) {
+			return ResponseEntity.ok(license);
+		}
+
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Returns the license text for the license with the given id.
+	 *
+	 */
+	@GetMapping(value = "/{license-id}/text", produces = { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+	@Operation(summary = "Returns the license text as text/html or plain/text for the license with the given ID.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
+	public ResponseEntity<String> getLicenseTextHTML(@PathVariable("license-id") String licenseID,
 			@RequestHeader(required = false) String accept) {
 
-		logger.debug("The text for the license with ID {} is requested as {}.", licenseID, accept);
+		logger.debug("The text for the license with ID {} is requested as {}...", licenseID, accept);
 
-		try {
-			if (accept.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
-				return ResponseEntity.ok(SpdxUtils.getLicenseText(licenseID));
-			}
-			return ResponseEntity.ok(SpdxUtils.getLicenseTextHtml(licenseID));
-		} catch (InvalidSPDXAnalysisException | InvalidLicenseTemplateException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		String licenseText;
+
+		if (accept.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
+			licenseText = LicenseUtils.getLicenseText(licenseID);
+
+		} else {
+			licenseText = LicenseUtils.getLicenseTextHtml(licenseID);
 		}
+
+		if (licenseText != null) {
+			return ResponseEntity.ok(licenseText);
+		}
+
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
 }

@@ -17,19 +17,23 @@
  * limitations under the License.
  *******************************************************************************/
 
-package resus.licenseengine;
+package resus.licenseengine.app;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 
 @SpringBootApplication
 public class LicenseEngineApplication {
+
+	private static final Logger logger = LoggerFactory.getLogger(LicenseEngineApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(LicenseEngineApplication.class, args);
@@ -38,7 +42,25 @@ public class LicenseEngineApplication {
 	@Bean
 	public OpenAPI customOpenAPI(@Value("${application-description}") String appDesciption,
 			@Value("${application-version}") String appVersion) {
-		return new OpenAPI().info(new Info().title("ReSUS License-Engine API").version(appVersion)
-				.description(appDesciption).license(new License().name("Apache 2.0")));
+
+		return new OpenAPI()
+				.info(new Info().title("ReSUS License-Engine API").version(appVersion).description(appDesciption));
 	}
+
+	@Bean
+	ApplicationRunner applicationRunner(@Value("${server.port}") String port,
+			@Value("${server.endpoints.software.path}") String softwarepath,
+			@Value("${server.endpoints.licenses.path}") String licensepath) {
+		return args -> {
+			logger.info("******************************************");
+			logger.info("Available endpoints:");
+			logger.info("http://localhost:" + port + softwarepath);
+			logger.info("http://localhost:" + port + licensepath);
+			logger.info("http://localhost:" + port + "/actuator/health");
+			logger.info("Endpoint documentation:");
+			logger.info("http://localhost:" + port + "/swagger-ui.html");
+			logger.info("******************************************");
+		};
+	}
+
 }

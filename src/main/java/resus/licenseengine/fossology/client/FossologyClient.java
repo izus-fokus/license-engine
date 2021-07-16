@@ -20,9 +20,9 @@
 package resus.licenseengine.fossology.client;
 
 import java.io.File;
+import java.net.ConnectException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,8 +65,9 @@ public class FossologyClient {
 	 * @param endpoint of fossology
 	 * @param username for accessing fossology
 	 * @param password for accessing fossology
+	 * @throws ConnectException
 	 */
-	public FossologyClient(String endpoint, String username, String password) {
+	public FossologyClient(String endpoint, String username, String password) throws Exception {
 
 		logger.debug("Creating new fossology client for endpoint: {}, username: {}, and password: {} ....", endpoint,
 				username, password);
@@ -85,20 +86,17 @@ public class FossologyClient {
 	 * 
 	 * @return if a fossology instance is running and can be accessed.
 	 */
-	public static boolean isAvailable(String endpoint) {
+	public boolean isAvailable() {
 
-		logger.debug(
-				"Checking if a fossology instance is running and can be accessed at the specified endpoint: {} ...",
-				endpoint);
+		logger.debug("Checking if a fossology instance is running and can be accessed...");
 		String version = null;
 
 		try {
-			InlineResponse200 response = JAXRSClientFactory
-					.create(endpoint, DefaultApi.class, Arrays.asList(new JacksonJsonProvider())).versionGet();
+			InlineResponse200 response = defaultApi.versionGet();
 			version = response.getVersion();
 		} catch (Exception e) {
-			logger.error(e.toString());
 			logger.warn("Can't find a running fossology instance that can be accessed.");
+			logger.debug(e.toString());
 			return false;
 		}
 
@@ -118,7 +116,7 @@ public class FossologyClient {
 	 * @param password for accessing fossology
 	 * @return the token
 	 */
-	private String createToken(String username, String password) {
+	private String createToken(String username, String password) throws Exception {
 
 		logger.debug("Creating an authorization token for accessing fossology...");
 
@@ -127,10 +125,9 @@ public class FossologyClient {
 		tokenreq.setUsername(password);
 		tokenreq.setTokenName(UUID.randomUUID().toString());
 		tokenreq.setTokenScope(TokenScopeEnum.WRITE);
-		tokenreq.setTokenExpire(LocalDate.now().plusDays(1).toString());
+		tokenreq.setTokenExpire(LocalDate.now().plusDays(30).toString());
 
 		DefaultResponse response = defaultApi.tokensPost(tokenreq);
-
 		String token = response.getAuthorization();
 
 		logger.debug("Authorization token created: {}", token);
@@ -275,6 +272,7 @@ public class FossologyClient {
 	 * @return true if the upload was successfully. Otherwise false.
 	 */
 	public boolean waitForUploadJob(Integer jobID) {
+
 		logger.debug("Waiting for finishing the upload job with ID: {}", jobID);
 		return waitForJob(jobID, null);
 	}
@@ -287,6 +285,7 @@ public class FossologyClient {
 	 * @return true if the analyzing was successfully. Otherwise false.
 	 */
 	public boolean waitForAnalyzeJob(Integer jobID) {
+
 		logger.debug("Waiting for finishing the analyze job with ID: {}", jobID);
 		return waitForJob(null, jobID);
 	}
@@ -299,6 +298,7 @@ public class FossologyClient {
 	 * @return true if the report creation was successfully. Otherwise false.
 	 */
 	public boolean waitForReportJob(Integer jobID) {
+
 		logger.debug("Waiting for finishing the report job with ID: {}", jobID);
 		return waitForJob(null, jobID);
 	}
@@ -330,7 +330,6 @@ public class FossologyClient {
 	public File getReport(Integer reportID) {
 
 		logger.debug("Getting the report with ID: uploadID", reportID);
-
 		return reportApi.reportIdGet(token, reportID, null);
 
 	}
