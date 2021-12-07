@@ -34,7 +34,7 @@ import org.spdx.html.InvalidLicenseTemplateException;
 import org.spdx.rdfparser.InvalidSPDXAnalysisException;
 import org.spdx.rdfparser.SPDXDocumentFactory;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
-import org.spdx.rdfparser.license.LicenseInfoFactory;
+import org.spdx.rdfparser.license.ListedLicenses;
 import org.spdx.rdfparser.license.SpdxListedLicense;
 import org.spdx.rdfparser.model.SpdxDocument;
 import org.spdx.rdfparser.model.SpdxFile;
@@ -42,6 +42,7 @@ import org.spdx.rdfparser.model.SpdxFile;
 public class LicenseUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(LicenseUtils.class);
+	private static ListedLicenses listedLicenses = ListedLicenses.getListedLicenses();
 
 	/**
 	 * 
@@ -175,7 +176,7 @@ public class LicenseUtils {
 		logger.debug("Returning the plain text for the license: {}...", licenseID);
 
 		try {
-			return LicenseInfoFactory.getListedLicenseById(licenseID).getLicenseText();
+			return listedLicenses.getListedLicenseById(licenseID).getLicenseText();
 		} catch (InvalidSPDXAnalysisException e) {
 			logger.warn("Can't find license with ID: {}", licenseID);
 		}
@@ -194,7 +195,7 @@ public class LicenseUtils {
 		logger.debug("Returning the text as html for the license: {}...", licenseID);
 
 		try {
-			return LicenseInfoFactory.getListedLicenseById(licenseID).getLicenseTextHtml();
+			return listedLicenses.getListedLicenseById(licenseID).getLicenseTextHtml();
 		} catch (InvalidLicenseTemplateException | InvalidSPDXAnalysisException e) {
 			logger.warn("Can't find license with ID: {}", licenseID);
 		}
@@ -206,7 +207,7 @@ public class LicenseUtils {
 	 */
 	public static String[] getAllLicenses() {
 		logger.debug("Returning all available licenses IDs...");
-		return LicenseInfoFactory.getSpdxListedLicenseIds();
+		return listedLicenses.getSpdxListedLicenseIds();
 	}
 
 	/**
@@ -217,7 +218,7 @@ public class LicenseUtils {
 		logger.debug("Returning the license with ID: {}...", licenseID);
 
 		try {
-			return LicenseInfoFactory.getListedLicenseById(licenseID);
+			return listedLicenses.getListedLicenseById(licenseID);
 		} catch (InvalidSPDXAnalysisException e) {
 			logger.warn("Can't find license with ID: {}", licenseID);
 		}

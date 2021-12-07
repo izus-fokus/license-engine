@@ -31,14 +31,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import resus.licenseengine.utils.LicenseUtils;
 
 @SpringBootApplication
 public class LicenseEngineApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(LicenseEngineApplication.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException {
 		SpringApplication.run(LicenseEngineApplication.class, args);
+		// initialize for speed up
+		Class.forName(LicenseUtils.class.getName());
 	}
 
 	@Bean
@@ -48,7 +51,7 @@ public class LicenseEngineApplication {
 		return new OpenAPI()
 				.info(new Info().title("ReSUS License-Engine API").version(appVersion).description(appDesciption));
 	}
-	
+
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
