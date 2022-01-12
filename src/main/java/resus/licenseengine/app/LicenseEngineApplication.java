@@ -57,14 +57,7 @@ public class LicenseEngineApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				//registry.addMapping("/**");
 				registry.addMapping("/**").exposedHeaders("Location","Access-Control-Expose-Headers","Access-Control-Allow-Origin", "Access-Control-Allow-Credentials");
-				//registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET", "POST", "OPTIONS", "PUT")
-                //.allowedHeaders("Location","Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-                //        "Access-Control-Request-Headers")
-                //.exposedHeaders("Access-Control-Expose-Headers","Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
-                //.allowCredentials(true).maxAge(3600);
-				//config.addAllowedHeader
 			}
 		};
 	}
