@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,7 +235,7 @@ public class LicenseEngine {
 	public static List<String> getRecommendedLicenses(Software software) {
 
 		List<String> recommendedLicenses = null;
-		Set<String> effectiveLicenses = software.getEffectiveLicenses();
+		List<String> effectiveLicenses = new ArrayList<String>(software.getEffectiveLicenses());
 		try {
 			recommendedLicenses = licenseRecommenderClient.getCompatibleLicenses(effectiveLicenses);
 		} catch (Exception e) {

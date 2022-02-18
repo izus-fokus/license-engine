@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class Limitation   {
+public class Conditions   {
   
   @Schema(required = true, description = "")
   private String id = null;
@@ -25,7 +25,7 @@ public class Limitation   {
     this.id = id;
   }
 
-  public Limitation id(String id) {
+  public Conditions id(String id) {
     this.id = id;
     return this;
   }
@@ -43,7 +43,7 @@ public class Limitation   {
     this.name = name;
   }
 
-  public Limitation name(String name) {
+  public Conditions name(String name) {
     this.name = name;
     return this;
   }
@@ -52,7 +52,7 @@ public class Limitation   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Limitation {\n");
+    sb.append("class Conditions {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");

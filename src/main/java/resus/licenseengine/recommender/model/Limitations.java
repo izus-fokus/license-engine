@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class LicenseType   {
+public class Limitations   {
   
   @Schema(required = true, description = "")
   private String id = null;
@@ -25,7 +25,7 @@ public class LicenseType   {
     this.id = id;
   }
 
-  public LicenseType id(String id) {
+  public Limitations id(String id) {
     this.id = id;
     return this;
   }
@@ -43,7 +43,7 @@ public class LicenseType   {
     this.name = name;
   }
 
-  public LicenseType name(String name) {
+  public Limitations name(String name) {
     this.name = name;
     return this;
   }
@@ -52,7 +52,7 @@ public class LicenseType   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class LicenseType {\n");
+    sb.append("class Limitations {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");

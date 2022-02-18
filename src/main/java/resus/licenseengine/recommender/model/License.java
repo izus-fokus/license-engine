@@ -18,16 +18,19 @@ public class License   {
   private String url = null;
   
   @Schema(description = "")
-  private LicenseType type = null;
+  private LicenseTypes type = null;
   
   @Schema(description = "")
-  private List<Condition> conditions = null;
+  private List<Conditions> conditions = null;
   
   @Schema(description = "")
-  private List<Permission> permissions = null;
+  private List<Permissions> permissions = null;
   
   @Schema(description = "")
-  private List<Limitation> limitations = null;
+  private List<Limitations> limitations = null;
+  
+  @Schema(description = "")
+  private List<String> compatibility = null;
  /**
    * Get id
    * @return id
@@ -87,15 +90,15 @@ public class License   {
    * @return type
   **/
   @JsonProperty("type")
-  public LicenseType getType() {
+  public LicenseTypes getType() {
     return type;
   }
 
-  public void setType(LicenseType type) {
+  public void setType(LicenseTypes type) {
     this.type = type;
   }
 
-  public License type(LicenseType type) {
+  public License type(LicenseTypes type) {
     this.type = type;
     return this;
   }
@@ -105,20 +108,20 @@ public class License   {
    * @return conditions
   **/
   @JsonProperty("conditions")
-  public List<Condition> getConditions() {
+  public List<Conditions> getConditions() {
     return conditions;
   }
 
-  public void setConditions(List<Condition> conditions) {
+  public void setConditions(List<Conditions> conditions) {
     this.conditions = conditions;
   }
 
-  public License conditions(List<Condition> conditions) {
+  public License conditions(List<Conditions> conditions) {
     this.conditions = conditions;
     return this;
   }
 
-  public License addConditionsItem(Condition conditionsItem) {
+  public License addConditionsItem(Conditions conditionsItem) {
     this.conditions.add(conditionsItem);
     return this;
   }
@@ -128,20 +131,20 @@ public class License   {
    * @return permissions
   **/
   @JsonProperty("permissions")
-  public List<Permission> getPermissions() {
+  public List<Permissions> getPermissions() {
     return permissions;
   }
 
-  public void setPermissions(List<Permission> permissions) {
+  public void setPermissions(List<Permissions> permissions) {
     this.permissions = permissions;
   }
 
-  public License permissions(List<Permission> permissions) {
+  public License permissions(List<Permissions> permissions) {
     this.permissions = permissions;
     return this;
   }
 
-  public License addPermissionsItem(Permission permissionsItem) {
+  public License addPermissionsItem(Permissions permissionsItem) {
     this.permissions.add(permissionsItem);
     return this;
   }
@@ -151,21 +154,44 @@ public class License   {
    * @return limitations
   **/
   @JsonProperty("limitations")
-  public List<Limitation> getLimitations() {
+  public List<Limitations> getLimitations() {
     return limitations;
   }
 
-  public void setLimitations(List<Limitation> limitations) {
+  public void setLimitations(List<Limitations> limitations) {
     this.limitations = limitations;
   }
 
-  public License limitations(List<Limitation> limitations) {
+  public License limitations(List<Limitations> limitations) {
     this.limitations = limitations;
     return this;
   }
 
-  public License addLimitationsItem(Limitation limitationsItem) {
+  public License addLimitationsItem(Limitations limitationsItem) {
     this.limitations.add(limitationsItem);
+    return this;
+  }
+
+ /**
+   * Get compatibility
+   * @return compatibility
+  **/
+  @JsonProperty("compatibility")
+  public List<String> getCompatibility() {
+    return compatibility;
+  }
+
+  public void setCompatibility(List<String> compatibility) {
+    this.compatibility = compatibility;
+  }
+
+  public License compatibility(List<String> compatibility) {
+    this.compatibility = compatibility;
+    return this;
+  }
+
+  public License addCompatibilityItem(String compatibilityItem) {
+    this.compatibility.add(compatibilityItem);
     return this;
   }
 
@@ -182,6 +208,7 @@ public class License   {
     sb.append("    conditions: ").append(toIndentedString(conditions)).append("\n");
     sb.append("    permissions: ").append(toIndentedString(permissions)).append("\n");
     sb.append("    limitations: ").append(toIndentedString(limitations)).append("\n");
+    sb.append("    compatibility: ").append(toIndentedString(compatibility)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -2,7 +2,6 @@ package resus.licenseengine.recommender.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.slf4j.Logger;
@@ -10,14 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
-import resus.licenseengine.recommender.api.DefaultApi;
+import resus.licenseengine.recommender.api.AccessingInformationFromTheLicenseOntologyApi;
 import resus.licenseengine.recommender.model.License;
 
 public class LicenseRecommenderClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(LicenseRecommenderClient.class);
 
-	private DefaultApi defaultApi;
+	private AccessingInformationFromTheLicenseOntologyApi recommenderApi;
 
 	/**
 	 * 
@@ -32,7 +31,7 @@ public class LicenseRecommenderClient {
 		JacksonJsonProvider provider = new JacksonJsonProvider();
 		List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
 		providers.add(provider);
-		defaultApi = JAXRSClientFactory.create(endpoint, DefaultApi.class, providers);
+		recommenderApi = JAXRSClientFactory.create(endpoint, AccessingInformationFromTheLicenseOntologyApi.class, providers);
 
 	}
 
@@ -56,7 +55,7 @@ public class LicenseRecommenderClient {
 	 * 
 	 */
 	public List<License> getAllLicenses() throws Exception {
-		return defaultApi.getAllNewLicensesLicensesGet();
+		return recommenderApi.getAllLicensesLicensesGet();
 	}
 
 	/**
@@ -64,12 +63,12 @@ public class LicenseRecommenderClient {
 	 * Sends a list of licenses to the license recommender service in order to get a
 	 * list of compatible licenses in return.
 	 * 
-	 * @param set to check
+	 * @param list to check
 	 * 
 	 * @return a list of compatible licenses.
 	 */
-	public List<String> getCompatibleLicenses(Set<String> set) throws Exception {
-		return defaultApi.checkLicenseLicensesCheckPost(set);
+	public List<String> getCompatibleLicenses(List<String> set) throws Exception {
+		return recommenderApi.checkLicenseLicensesCheckPost(set);
 	}
 
 }

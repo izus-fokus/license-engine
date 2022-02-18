@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class Permission   {
+public class Permissions   {
   
   @Schema(required = true, description = "")
   private String id = null;
@@ -25,7 +25,7 @@ public class Permission   {
     this.id = id;
   }
 
-  public Permission id(String id) {
+  public Permissions id(String id) {
     this.id = id;
     return this;
   }
@@ -43,7 +43,7 @@ public class Permission   {
     this.name = name;
   }
 
-  public Permission name(String name) {
+  public Permissions name(String name) {
     this.name = name;
     return this;
   }
@@ -52,7 +52,7 @@ public class Permission   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Permission {\n");
+    sb.append("class Permissions {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
