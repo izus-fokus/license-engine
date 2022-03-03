@@ -74,6 +74,7 @@ public class LicenseEngineApplication {
 			logger.info("http://localhost:" + port + "/actuator/health");
 			logger.info("Endpoint documentation:");
 			logger.info("http://localhost:" + port + "/swagger-ui.html");
+			logger.info("(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p 8081:80 fossology/fossology:3.10.0)");
 			logger.info("******************************************");
 		};
 	}

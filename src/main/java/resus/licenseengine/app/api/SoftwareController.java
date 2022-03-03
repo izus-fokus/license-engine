@@ -228,8 +228,7 @@ public class SoftwareController {
 	public ResponseEntity<List<String>> getAllFilesWithLicense(@PathVariable("software-id") String softwareID, @PathVariable("license-id") String licenseID,
 			@RequestParam(defaultValue = "true") boolean effective) {
 
-		logger.debug("Requesting the licenses for the software with ID {}...", softwareID);
-		logger.debug("QueryParams for license: {} and effective: {}.", softwareID, licenseID, softwareID);
+		logger.debug("Requesting the files of license {} for the software with ID {}...", softwareID, licenseID);
 
 		Software software = LicenseEngine.getSoftware(softwareID);
 
@@ -286,7 +285,7 @@ public class SoftwareController {
 
 		Software software = LicenseEngine.getSoftware(softwareID);
 		if (software != null) {
-			software.getExcludedFiles().clear();
+			software.clearExcludedFiles();
 		}
 		throw new ResponseStatusException(HttpStatus.NO_CONTENT);
 	}

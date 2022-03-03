@@ -115,6 +115,8 @@ public class LicenseEngine {
 						Integer filesCount = LicenseUtils.getFilesCount(spdxDocument);
 
 						software.setLicenseFilesMapping(licenseFilesMapping);
+						// no licenses found - can be ignored
+						software.addExcludedFiles(licenseFilesMapping.get("NULL LICENSE"));
 						software.setFiles(filesCount);
 
 						logger.info("Processing of the new software with ID: {} finished.", id);

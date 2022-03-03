@@ -91,6 +91,13 @@ public class Software {
 	public Map<String, List<String>> getLicenseFilesMapping() {
 		return licensesToFilesMapping;
 	}
+	
+	/**
+	 * @param licenseFilesMapping the licenseFilesMapping to set
+	 */
+	public void setLicenseFilesMapping(Map<String, List<String>> licenseFilesMapping) {
+		this.licensesToFilesMapping = licenseFilesMapping;
+	}
 
 	/**
 	 * @return the name
@@ -162,12 +169,6 @@ public class Software {
 		this.status = status;
 	}
 
-	/**
-	 * @param licenseFilesMapping the licenseFilesMapping to set
-	 */
-	public void setLicenseFilesMapping(Map<String, List<String>> licenseFilesMapping) {
-		this.licensesToFilesMapping = licenseFilesMapping;
-	}
 
 	/**
 	 * @return the id
@@ -186,8 +187,15 @@ public class Software {
 	/**
 	 * @param excludedFiles the excludedFiles to set
 	 */
-	public void setExcludedFiles(List<String> excludedFiles) {
-		this.excludedFiles = excludedFiles;
+	public void addExcludedFiles(List<String> excludedFiles) {
+		this.excludedFiles.addAll(excludedFiles);
+	}
+	
+	/**
+	 * clears the excluded-files list
+	 */
+	public void clearExcludedFiles() {
+		this.excludedFiles.clear();
 	}
 
 	private static HashMap<String, List<String>> deepCopyMap(Map<String, List<String>> licensesToFilesMapping) {
