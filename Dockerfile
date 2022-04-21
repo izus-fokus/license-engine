@@ -7,6 +7,6 @@ RUN mvn clean package
     
 From openjdk:8
 
-copy --from=builder /tmp/resus/licenseengine/target/licenseengine-0.0.1-SNAPSHOT.jar licenseengine-0.0.1-SNAPSHOT.jar
+copy --from=builder /tmp/resus/licenseengine/target/licenseengine-0.0.1-SNAPSHOT.jar licenseengine.jar
 
-CMD ["java","-jar","licenseengine-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT  ["java","-jar","licenseengine.jar"]

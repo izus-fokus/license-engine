@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -86,7 +85,19 @@ public class LicenseEngineApplication {
 
 		public void run(ApplicationArguments args) {
 
-			if (ObjectUtils.isEmpty(args.getSourceArgs())) {
+			logger.info("Starting...");
+
+			if (args.containsOption("repo")) {
+				String branch = null;
+				String repo = "https://github.com/" + args.getOptionValues("repo").get(0);
+				if (args.containsOption("branch")) {
+					branch = args.getOptionValues("branch").get(0);
+				}
+				LicenseEngineCLI.checkRepo(repo, branch);
+				int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> 0);
+				System.exit(exitCode);
+
+			} else {
 				logger.info("******************************************");
 				logger.info("Available endpoints:");
 				logger.info("http://localhost:" + port + softwarepath);
@@ -98,17 +109,6 @@ public class LicenseEngineApplication {
 						"(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p 8081:80 fossology/fossology:3.10.0)");
 				logger.info("******************************************");
 
-			}
-			
-			if (args.containsOption("repo")) {
-				String branch = null;
-				String repo = "https://github.com/" + args.getOptionValues("repo").get(0);
-				if (args.containsOption("branch")) {
-					branch = args.getOptionValues("branch").get(0);
-				}
-				LicenseEngineCLI.checkRepo(repo, branch);
-				int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> 0);
-				System.exit(exitCode);
 			}
 
 		}
