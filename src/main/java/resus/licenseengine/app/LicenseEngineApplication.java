@@ -21,20 +21,30 @@ package resus.licenseengine.app;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import resus.licenseengine.app.cli.LicenseEngineCLI;
 import resus.licenseengine.utils.LicenseUtils;
 
 @SpringBootApplication
 public class LicenseEngineApplication {
+
+	@Autowired
+	private ApplicationContext context;
 
 	private static final Logger logger = LoggerFactory.getLogger(LicenseEngineApplication.class);
 
@@ -57,26 +67,51 @@ public class LicenseEngineApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE").exposedHeaders("Location","Access-Control-Expose-Headers","Access-Control-Allow-Origin", "Access-Control-Allow-Credentials");
+				registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE").exposedHeaders("Location",
+						"Access-Control-Expose-Headers", "Access-Control-Allow-Origin",
+						"Access-Control-Allow-Credentials");
 			}
 		};
 	}
 
-	@Bean
-	ApplicationRunner applicationRunner(@Value("${server.port}") String port,
-			@Value("${server.endpoints.software.path}") String softwarepath,
-			@Value("${server.endpoints.licenses.path}") String licensepath) {
-		return args -> {
-			logger.info("******************************************");
-			logger.info("Available endpoints:");
-			logger.info("http://localhost:" + port + softwarepath);
-			logger.info("http://localhost:" + port + licensepath);
-			logger.info("http://localhost:" + port + "/actuator/health");
-			logger.info("Endpoint documentation:");
-			logger.info("http://localhost:" + port + "/swagger-ui.html");
-			logger.info("(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p 8081:80 fossology/fossology:3.10.0)");
-			logger.info("******************************************");
-		};
+	@Component
+	public class LicenseEngineApplicationRunner implements ApplicationRunner {
+
+		@Value("${server.port}")
+		String port;
+		@Value("${server.endpoints.software.path}")
+		String softwarepath;
+		@Value("${server.endpoints.licenses.path}")
+		String licensepath;
+
+		public void run(ApplicationArguments args) {
+
+			if (ObjectUtils.isEmpty(args.getSourceArgs())) {
+				logger.info("******************************************");
+				logger.info("Available endpoints:");
+				logger.info("http://localhost:" + port + softwarepath);
+				logger.info("http://localhost:" + port + licensepath);
+				logger.info("http://localhost:" + port + "/actuator/health");
+				logger.info("Endpoint documentation:");
+				logger.info("http://localhost:" + port + "/swagger-ui.html");
+				logger.info(
+						"(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p 8081:80 fossology/fossology:3.10.0)");
+				logger.info("******************************************");
+
+			}
+			
+			if (args.containsOption("repo")) {
+				String branch = null;
+				String repo = "https://github.com/" + args.getOptionValues("repo").get(0);
+				if (args.containsOption("branch")) {
+					branch = args.getOptionValues("branch").get(0);
+				}
+				LicenseEngineCLI.checkRepo(repo, branch);
+				int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> 0);
+				System.exit(exitCode);
+			}
+
+		}
 	}
 
 }

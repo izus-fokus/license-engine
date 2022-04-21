@@ -164,6 +164,7 @@ public class SoftwareController {
 		if (software != null) {
 			List<String> recommendedLicenses = LicenseEngine.getRecommendedLicenses(software);
 			if (recommendedLicenses != null) {
+				logger.debug("Recommended licenses: {}", recommendedLicenses);
 				return ResponseEntity.ok(recommendedLicenses);
 			} else {
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,

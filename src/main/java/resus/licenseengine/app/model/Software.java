@@ -49,6 +49,12 @@ public class Software {
 	@JsonIgnore
 	private List<String> excludedFiles = new ArrayList<String>();
 
+	public Software(String id, String name, String url) {
+		this.id = id;
+		this.name = name;
+		this.url = url;
+	}
+
 	@JsonProperty(value = "licenses-all", access = Access.READ_ONLY)
 	public Set<String> getAllLicenses() {
 		return licensesToFilesMapping.keySet();
@@ -91,7 +97,7 @@ public class Software {
 	public Map<String, List<String>> getLicenseFilesMapping() {
 		return licensesToFilesMapping;
 	}
-	
+
 	/**
 	 * @param licenseFilesMapping the licenseFilesMapping to set
 	 */
@@ -169,7 +175,6 @@ public class Software {
 		this.status = status;
 	}
 
-
 	/**
 	 * @return the id
 	 */
@@ -190,7 +195,7 @@ public class Software {
 	public void addExcludedFiles(List<String> excludedFiles) {
 		this.excludedFiles.addAll(excludedFiles);
 	}
-	
+
 	/**
 	 * clears the excluded-files list
 	 */
