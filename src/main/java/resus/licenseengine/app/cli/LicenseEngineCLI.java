@@ -1,5 +1,9 @@
 package resus.licenseengine.app.cli;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +20,7 @@ public class LicenseEngineCLI {
 
 	public static Integer checkRepo(String repoURL, String branch) {
 
-		Software software = new Software(RandomStringUtils.randomNumeric(8), "CLI_Check", repoURL);
+		Software software = new Software(RandomStringUtils.randomNumeric(8), null, repoURL);
 
 		logger.info("Starting the licenses check for repository: {}", repoURL);
 		if (branch != null) {
@@ -31,22 +35,32 @@ public class LicenseEngineCLI {
 		LicenseEngine.startProcessing(software);
 
 		logger.info("Found files and licenses:");
+		printFilesAndLicenes(software);
 
-		for (Map.Entry<String, List<String>> entry : software.getEffectiveLicensesFilesMapping().entrySet()) {
-			logger.info("   - " + entry.getKey() + ":");
-			for (String file : entry.getValue()) {
-				logger.info("       - " + file);
+		Path path = Paths.get(".ignorefiles");
+		try {
+			List<String> lines = Files.readAllLines(path);
+			logger.info(".ignorefiles found. Following files are specified to be ignored:");
+			for (String line : lines) {
+				logger.info("   - " + line);
+				software.getExcludedFiles().add(line);
 			}
+		} catch (IOException e) {
+			logger.info("No .ignorefiles found!");
 		}
 
-		logger.info("Checking for compatible licenses based on the found licenses: {}",
+		logger.info("Resulting files and licenses used for checking for a compatible license:");
+		printFilesAndLicenes(software);
+
+		logger.info("Checking for compatible licenses based on the resulting list of licenses: {}",
 				software.getEffectiveLicenses());
 
 		if (!LicenseEngine.isLicenseRecommenderAvailable()) {
 			return 1;
 		}
 
-		if (LicenseEngine.getRecommendedLicenses(software).size() > 0) {
+		if (LicenseEngine.getRecommendedLicenses(software) != null
+				&& LicenseEngine.getRecommendedLicenses(software).size() > 0) {
 			logger.info("*******************************************************************");
 			logger.info("Found compatible licenses: {}", LicenseEngine.getRecommendedLicenses(software));
 			return 0;
@@ -55,4 +69,14 @@ public class LicenseEngineCLI {
 		logger.error("No compatible license(s) found!");
 		return 1;
 	}
+
+	private static void printFilesAndLicenes(Software software) {
+		for (Map.Entry<String, List<String>> entry : software.getEffectiveLicensesFilesMapping().entrySet()) {
+			logger.info("   - " + entry.getKey() + ":");
+			for (String file : entry.getValue()) {
+				logger.info("       - " + file);
+			}
+		}
+	}
+
 }
