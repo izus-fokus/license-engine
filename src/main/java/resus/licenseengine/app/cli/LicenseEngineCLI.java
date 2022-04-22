@@ -37,17 +37,7 @@ public class LicenseEngineCLI {
 		logger.info("Found files and licenses:");
 		printFilesAndLicenes(software);
 
-		Path path = Paths.get(".ignorefiles");
-		try {
-			List<String> lines = Files.readAllLines(path);
-			logger.info(".ignorefiles found. Following files are specified to be ignored:");
-			for (String line : lines) {
-				logger.info("   - " + line);
-				software.getExcludedFiles().add(line);
-			}
-		} catch (IOException e) {
-			logger.info("No .ignorefiles found!");
-		}
+		setExcludedFiles(software);
 
 		logger.info("Resulting files and licenses used for checking for a compatible license:");
 		printFilesAndLicenes(software);
@@ -76,6 +66,20 @@ public class LicenseEngineCLI {
 			for (String file : entry.getValue()) {
 				logger.info("       - " + file);
 			}
+		}
+	}
+
+	private static void setExcludedFiles(Software software) {
+		Path path = Paths.get(".ignorefiles");
+		try {
+			List<String> lines = Files.readAllLines(path);
+			logger.info(".ignorefiles found. Following files are specified to be ignored:");
+			for (String line : lines) {
+				logger.info("   - " + line);
+				software.getExcludedFiles().add(line);
+			}
+		} catch (IOException e) {
+			logger.info("No .ignorefiles found!");
 		}
 	}
 

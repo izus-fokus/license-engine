@@ -74,16 +74,27 @@ public class Software {
 	public Map<String, List<String>> getEffectiveLicensesFilesMapping() {
 
 		Map<String, List<String>> effectiveLicensesFilesMapping = deepCopyMap(licensesToFilesMapping);
-		List<String> toRemove = new ArrayList<String>();
+		List<String> toRemoveLicenses = new ArrayList<String>();
 
 		for (Entry<String, List<String>> licensesFilesEntry : effectiveLicensesFilesMapping.entrySet()) {
-			licensesFilesEntry.getValue().removeAll(excludedFiles);
+			for (String ignoredFile : excludedFiles) {
+				if (ignoredFile.endsWith("*")) {
+					List<String> toRemoveFiles = new ArrayList<String>();
+					for (String file : licensesFilesEntry.getValue()) {
+						if (file.startsWith(ignoredFile.substring(0, ignoredFile.length() - 1))) {
+							toRemoveFiles.add(file);
+						}
+					}
+					licensesFilesEntry.getValue().removeAll(toRemoveFiles);
+				} else {
+					licensesFilesEntry.getValue().remove(ignoredFile);
+				}
+			}
 			if (licensesFilesEntry.getValue().isEmpty()) {
-				toRemove.add(licensesFilesEntry.getKey());
+				toRemoveLicenses.add(licensesFilesEntry.getKey());
 			}
 		}
-
-		for (String license : toRemove) {
+		for (String license : toRemoveLicenses) {
 			effectiveLicensesFilesMapping.remove(license);
 		}
 
