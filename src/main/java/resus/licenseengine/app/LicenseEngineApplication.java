@@ -93,8 +93,8 @@ public class LicenseEngineApplication {
 				if (args.containsOption("branch")) {
 					branch = args.getOptionValues("branch").get(0);
 				}
-				LicenseEngineCLI.checkRepo(repo, branch);
-				int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> 0);
+				Integer result = LicenseEngineCLI.checkRepo(repo, branch);				
+				int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> result);
 				System.exit(exitCode);
 
 			} else {

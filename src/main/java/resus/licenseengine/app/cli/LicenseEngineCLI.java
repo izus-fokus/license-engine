@@ -1,5 +1,8 @@
 package resus.licenseengine.app.cli;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +14,7 @@ public class LicenseEngineCLI {
 
 	private static final Logger logger = LoggerFactory.getLogger(LicenseEngineCLI.class);
 
-	public static void checkRepo(String repoURL, String branch) {
+	public static Integer checkRepo(String repoURL, String branch) {
 
 		Software software = new Software(RandomStringUtils.randomNumeric(8), "CLI_Check", repoURL);
 
@@ -22,21 +25,34 @@ public class LicenseEngineCLI {
 		}
 
 		if (!LicenseEngine.isFossologyAvailable()) {
-			return;
+			return 1;
 		}
 
 		LicenseEngine.startProcessing(software);
 
-		logger.info("Found files and licenses: {}", software.getEffectiveLicensesFilesMapping());
-		logger.info("Checking for a compatible license based on the found licenses: {}",
+		logger.info("Found files and licenses:");
+
+		for (Map.Entry<String, List<String>> entry : software.getEffectiveLicensesFilesMapping().entrySet()) {
+			logger.info("   - " + entry.getKey() + ":");
+			for (String file : entry.getValue()) {
+				logger.info("       - " + file);
+			}
+		}
+
+		logger.info("Checking for compatible licenses based on the found licenses: {}",
 				software.getEffectiveLicenses());
 
 		if (!LicenseEngine.isLicenseRecommenderAvailable()) {
-			return;
+			return 1;
 		}
 
-		logger.info("Recommended licenses: {}", LicenseEngine.getRecommendedLicenses(software));
-
+		if (LicenseEngine.getRecommendedLicenses(software).size() > 0) {
+			logger.info("*******************************************************************");
+			logger.info("Found compatible licenses: {}", LicenseEngine.getRecommendedLicenses(software));
+			return 0;
+		}
+		logger.info("*******************************************************************");
+		logger.error("No compatible license(s) found!");
+		return 1;
 	}
-
 }
