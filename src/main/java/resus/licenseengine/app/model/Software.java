@@ -78,7 +78,15 @@ public class Software {
 
 		for (Entry<String, List<String>> licensesFilesEntry : effectiveLicensesFilesMapping.entrySet()) {
 			for (String ignoredFile : excludedFiles) {
-				if (ignoredFile.endsWith("*")) {
+				if (ignoredFile.endsWith("*") && ignoredFile.startsWith("*")) {
+					List<String> toRemoveFiles = new ArrayList<String>();
+					for (String file : licensesFilesEntry.getValue()) {
+						if (file.contains(ignoredFile.substring(1, ignoredFile.length() - 1))) {
+							toRemoveFiles.add(file);
+						}
+					}
+					licensesFilesEntry.getValue().removeAll(toRemoveFiles);
+				} else if (ignoredFile.endsWith("*")) {
 					List<String> toRemoveFiles = new ArrayList<String>();
 					for (String file : licensesFilesEntry.getValue()) {
 						if (file.startsWith(ignoredFile.substring(0, ignoredFile.length() - 1))) {
@@ -86,9 +94,18 @@ public class Software {
 						}
 					}
 					licensesFilesEntry.getValue().removeAll(toRemoveFiles);
+				} else if (ignoredFile.startsWith("*")) {
+					List<String> toRemoveFiles = new ArrayList<String>();
+					for (String file : licensesFilesEntry.getValue()) {
+						if (file.endsWith(ignoredFile.substring(1, ignoredFile.length()))) {
+							toRemoveFiles.add(file);
+						}
+					}
+					licensesFilesEntry.getValue().removeAll(toRemoveFiles);
 				} else {
 					licensesFilesEntry.getValue().remove(ignoredFile);
 				}
+
 			}
 			if (licensesFilesEntry.getValue().isEmpty()) {
 				toRemoveLicenses.add(licensesFilesEntry.getKey());

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -42,8 +43,15 @@ public class LicenseEngineCLI {
 		logger.info("Resulting files and licenses used for checking for a compatible license:");
 		printFilesAndLicenes(software);
 
-		logger.info("Checking for compatible licenses based on the resulting list of licenses: {}",
-				software.getEffectiveLicenses());
+		Set<String> licenses = software.getEffectiveLicenses();
+
+		if (licenses.size() < 1) {
+			logger.info("*******************************************************************");
+			logger.info("No licenses found.");
+			return 0;
+		}
+
+		logger.info("Checking for compatible licenses based on the resulting list of licenses: {}", licenses);
 
 		if (!LicenseEngine.isLicenseRecommenderAvailable()) {
 			return 1;
