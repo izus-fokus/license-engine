@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.ws.rs.InternalServerErrorException;
+
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,11 +154,17 @@ public class FossologyClient {
 		vcsUpload.setVcsType(VcsUpload.VcsTypeEnum.GIT);
 		vcsUpload.setVcsUrl(vcsUrl);
 
-		Info info = uploadApi.uploadsPost(token, 1, description, "public", true, null, "vcs", vcsUpload);
+		logger.debug("Uploading software...: {} from: {}.", description, vcsUrl);
 
-		Integer id = Integer.parseInt(info.getMessage());
+		Integer id = null;
 
-		logger.debug("Uploading software...: {} from: {}. JobID: {}", description, vcsUrl, id);
+		try {
+			Info info = uploadApi.uploadsPost(token, 1, description, "public", true, null, "vcs", vcsUpload);
+			id = Integer.parseInt(info.getMessage());
+			logger.debug("JobID: {}", id);
+		} catch (InternalServerErrorException e) {
+			logger.warn("Upload failed: {}", e);
+		}
 
 		return id;
 	}
@@ -175,11 +183,17 @@ public class FossologyClient {
 		urlUpload.setName(description);
 		urlUpload.setUrl(url);
 
-		Info info = uploadApi.uploadsPost(token, 1, description, "public", true, null, "url", urlUpload);
+		logger.debug("Uploading software...: {} from: {}.", description, url);
 
-		Integer id = Integer.parseInt(info.getMessage());
+		Integer id = null;
 
-		logger.debug("Uploading software...: {} from: {}. JobID: {} ", description, url, id);
+		try {
+			Info info = uploadApi.uploadsPost(token, 1, description, "public", true, null, "url", urlUpload);
+			id = Integer.parseInt(info.getMessage());
+			logger.debug("JobID: {}", id);
+		} catch (InternalServerErrorException e) {
+			logger.warn("Upload failed: {}", e);
+		}
 
 		return id;
 	}
