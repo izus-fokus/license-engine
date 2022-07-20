@@ -193,11 +193,16 @@ public class LicenseUtils {
 	public static String getLicenseTextHtml(String licenseID) {
 
 		logger.debug("Returning the text as html for the license: {}...", licenseID);
+		SpdxListedLicense license = null;
 
 		try {
-			return listedLicenses.getListedLicenseById(licenseID).getLicenseTextHtml();
+			license = listedLicenses.getListedLicenseById(licenseID);
+			return license.getLicenseTextHtml();
 		} catch (InvalidLicenseTemplateException | InvalidSPDXAnalysisException e) {
 			logger.warn("Can't find license with ID: {}", licenseID);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			logger.warn("The license with ID: {} has no HTML representation. Returning plain text instead.", licenseID);
+			return license.getLicenseText();
 		}
 		return null;
 	}
