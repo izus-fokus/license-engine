@@ -82,6 +82,8 @@ public class LicenseEngineApplication {
 		String softwarepath;
 		@Value("${server.endpoints.licenses.path}")
 		String licensepath;
+		@Value("${fossology.endpoint.port}")
+		String fossPort;
 
 		public void run(ApplicationArguments args) {
 
@@ -93,7 +95,7 @@ public class LicenseEngineApplication {
 				if (args.containsOption("branch")) {
 					branch = args.getOptionValues("branch").get(0);
 				}
-				Integer result = LicenseEngineCLI.checkRepo(repo, branch);				
+				Integer result = LicenseEngineCLI.checkRepo(repo, branch);
 				int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> result);
 				System.exit(exitCode);
 
@@ -106,7 +108,8 @@ public class LicenseEngineApplication {
 				logger.info("Endpoint documentation:");
 				logger.info("http://localhost:" + port + "/swagger-ui.html");
 				logger.info(
-						"(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p 8081:80 fossology/fossology:3.10.0)");
+						"(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p "
+								+ fossPort + ":80 fossology/fossology:3.10.0)");
 				logger.info("******************************************");
 
 			}
