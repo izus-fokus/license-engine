@@ -13,7 +13,7 @@ public class License {
 	private String name;
 	@JsonProperty(access = Access.READ_ONLY)
 	private String notes;
-	@JsonProperty(value = "further-information", access = Access.READ_ONLY)
+	@JsonProperty(value = "furtherInformation", access = Access.READ_ONLY)
 	private ArrayList<String> furtherInformation;
 
 	/**

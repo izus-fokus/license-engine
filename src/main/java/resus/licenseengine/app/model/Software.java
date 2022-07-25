@@ -55,17 +55,17 @@ public class Software {
 		this.url = url;
 	}
 
-	@JsonProperty(value = "licenses-all", access = Access.READ_ONLY)
+	@JsonProperty(value = "licensesAll", access = Access.READ_ONLY)
 	public Set<String> getAllLicenses() {
 		return licensesToFilesMapping.keySet();
 	}
 
-	@JsonProperty(value = "files-excluded", access = Access.READ_ONLY)
+	@JsonProperty(value = "filesExcluded", access = Access.READ_ONLY)
 	public Integer getExcludedFilesCount() {
 		return excludedFiles.size();
 	}
 
-	@JsonProperty(value = "licenses-effective", access = Access.READ_ONLY)
+	@JsonProperty(value = "licensesEffective", access = Access.READ_ONLY)
 	public Set<String> getEffectiveLicenses() {
 		return getEffectiveLicensesFilesMapping().keySet();
 	}
