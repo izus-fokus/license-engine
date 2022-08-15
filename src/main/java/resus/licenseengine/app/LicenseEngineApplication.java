@@ -91,11 +91,17 @@ public class LicenseEngineApplication {
 
 			if (args.containsOption("repo")) {
 				String branch = null;
+				String license = null;
 				String repo = "https://github.com/" + args.getOptionValues("repo").get(0);
 				if (args.containsOption("branch")) {
 					branch = args.getOptionValues("branch").get(0);
 				}
-				Integer result = LicenseEngineCLI.checkRepo(repo, branch);
+				if (args.containsOption("license")) {
+					license = args.getOptionValues("license").get(0);
+				}
+
+				Integer result = LicenseEngineCLI.checkRepo(repo, branch, license);
+
 				int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> result);
 				System.exit(exitCode);
 

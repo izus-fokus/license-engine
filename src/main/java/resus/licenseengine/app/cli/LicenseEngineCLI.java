@@ -19,7 +19,7 @@ public class LicenseEngineCLI {
 
 	private static final Logger logger = LoggerFactory.getLogger(LicenseEngineCLI.class);
 
-	public static Integer checkRepo(String repoURL, String branch) {
+	public static Integer checkRepo(String repoURL, String branch, String license) {
 
 		Software software = new Software(RandomStringUtils.randomNumeric(8), null, repoURL);
 
@@ -27,6 +27,12 @@ public class LicenseEngineCLI {
 		if (branch != null) {
 			logger.info("Branch: {}", branch);
 			software.setBranch(branch);
+		}
+
+		if (license != null) {
+			logger.info("The defined license of the repository is: {}", license);
+		} else {
+			logger.info("There is no license defined for the repository.");
 		}
 
 		if (!LicenseEngine.isFossologyAvailable()) {
@@ -40,7 +46,7 @@ public class LicenseEngineCLI {
 
 		setExcludedFiles(software);
 
-		logger.info("Resulting files and licenses used for checking for a compatible license:");
+		logger.info("Resulting files and licenses used for checking for compatible licenses:");
 		printFilesAndLicenes(software);
 
 		Set<String> licenses = software.getEffectiveLicenses();
@@ -57,14 +63,24 @@ public class LicenseEngineCLI {
 			return 1;
 		}
 
-		if (LicenseEngine.getRecommendedLicenses(software) != null
-				&& LicenseEngine.getRecommendedLicenses(software).size() > 0) {
-			logger.info("*******************************************************************");
+		List<String> compatibleLicense = LicenseEngine.getRecommendedLicenses(software);
+
+		logger.info("*******************************************************************");
+
+		if (compatibleLicense != null && compatibleLicense.size() > 0) {
+			if (license != null) {
+				if (compatibleLicense.stream().anyMatch(license::equalsIgnoreCase)) {
+					logger.info("Found licenses are compatible with the defined license: {}", license);
+					return 0;
+				} else {
+					logger.error("Found licenses are not compatible with the defined license: {}", license);
+					return 1;
+				}
+			}
 			logger.info("Found compatible licenses: {}", LicenseEngine.getRecommendedLicenses(software));
 			return 0;
 		}
-		logger.info("*******************************************************************");
-		logger.error("No compatible license(s) found!");
+		logger.error("Found licenses are not compatible!");
 		return 1;
 	}
 
