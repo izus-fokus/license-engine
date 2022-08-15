@@ -78,16 +78,16 @@ public class LicenseEngineCLI {
 	}
 
 	private static void setExcludedFiles(Software software) {
-		Path path = Paths.get(".ignorefiles");
+		Path path = Paths.get(".license_ignorefiles");
 		try {
 			List<String> lines = Files.readAllLines(path);
-			logger.info(".ignorefiles found. Following files are specified to be ignored:");
+			logger.info(".license_ignorefiles file found. Following files are specified to be ignored:");
 			for (String line : lines) {
 				logger.info("   - " + line);
 				software.getExcludedFiles().add(line);
 			}
 		} catch (IOException e) {
-			logger.info("No .ignorefiles found!");
+			logger.info("No .license_ignorefiles file found!");
 		}
 	}
 
