@@ -23,16 +23,10 @@ public class LicenseEngineCLI {
 
 		Software software = new Software(RandomStringUtils.randomNumeric(8), null, repoURL);
 
-		logger.info("Starting the licenses check for repository: {}", repoURL);
+		logger.info("Starting the licenses check for repository: {} ...", repoURL);
 		if (branch != null) {
 			logger.info("Branch: {}", branch);
 			software.setBranch(branch);
-		}
-
-		if (license != null) {
-			logger.info("The defined license of the repository is: {}", license);
-		} else {
-			logger.info("There is no license defined for the repository.");
 		}
 
 		if (!LicenseEngine.isFossologyAvailable()) {
@@ -41,23 +35,23 @@ public class LicenseEngineCLI {
 
 		LicenseEngine.startProcessing(software);
 
-		logger.info("Found files and licenses:");
+		logger.info("Found licenses and files:");
 		printFilesAndLicenes(software);
 
 		setExcludedFiles(software);
 
-		logger.info("Resulting files and licenses used for checking for compatible licenses:");
+		logger.info("Resulting licenses and files used for checking for compatible licenses:");
 		printFilesAndLicenes(software);
 
 		Set<String> licenses = software.getEffectiveLicenses();
 
 		if (licenses.size() < 1) {
-			logger.info("*******************************************************************");
+			printEnd();
 			logger.info("No licenses found.");
 			return 0;
 		}
 
-		logger.info("Checking for compatible licenses based on the resulting list of licenses: {}", licenses);
+		logger.info("Checking for compatible licenses based on the resulting list of licenses: {} ...", licenses);
 
 		if (!LicenseEngine.isLicenseRecommenderAvailable()) {
 			return 1;
@@ -65,21 +59,26 @@ public class LicenseEngineCLI {
 
 		List<String> compatibleLicense = LicenseEngine.getRecommendedLicenses(software);
 
-		logger.info("*******************************************************************");
+		printEnd();
 
 		if (compatibleLicense != null && compatibleLicense.size() > 0) {
+
+			logger.info("Compatible licenses found: {}", compatibleLicense.toString());
+
 			if (license != null) {
 				if (compatibleLicense.stream().anyMatch(license::equalsIgnoreCase)) {
-					logger.info("Found licenses are compatible with the defined license: {}", license);
+					logger.info("Found licenses are compatible with the defined license of the repository: {}",
+							license);
 					return 0;
 				} else {
-					logger.error("Found licenses are not compatible with the defined license: {}", license);
+					logger.error("However, found licenses are not compatible with the defined license of the repository: {}",
+							license);
 					return 1;
 				}
 			}
-			logger.info("Found compatible licenses: {}", LicenseEngine.getRecommendedLicenses(software));
 			return 0;
 		}
+
 		logger.error("Found licenses are not compatible!");
 		return 1;
 	}
@@ -105,6 +104,13 @@ public class LicenseEngineCLI {
 		} catch (IOException e) {
 			logger.info("No .license_ignorefiles file found!");
 		}
+	}
+
+	private static void printEnd() {
+		logger.info(
+				"*******************************************************************************************************");
+		logger.info(
+				"*******************************************************************************************************");
 	}
 
 }
