@@ -35,6 +35,8 @@ public class LicenseEngineCLI {
 
 		LicenseEngine.startProcessing(software);
 
+		printSeparator();
+
 		logger.info("Found licenses and files:");
 		printFilesAndLicenes(software);
 
@@ -46,7 +48,7 @@ public class LicenseEngineCLI {
 		Set<String> licenses = software.getEffectiveLicenses();
 
 		if (licenses.size() < 1) {
-			printEnd();
+			printSeparator();
 			logger.info("No licenses found.");
 			return 0;
 		}
@@ -59,7 +61,7 @@ public class LicenseEngineCLI {
 
 		List<String> compatibleLicense = LicenseEngine.getRecommendedLicenses(software);
 
-		printEnd();
+		printSeparator();
 
 		if (compatibleLicense != null && compatibleLicense.size() > 0) {
 
@@ -71,7 +73,8 @@ public class LicenseEngineCLI {
 							license);
 					return 0;
 				} else {
-					logger.error("However, found licenses are not compatible with the defined license of the repository: {}",
+					logger.error(
+							"However, found licenses are not compatible with the defined license of the repository: {}",
 							license);
 					return 1;
 				}
@@ -106,11 +109,11 @@ public class LicenseEngineCLI {
 		}
 	}
 
-	private static void printEnd() {
+	private static void printSeparator() {
 		logger.info(
-				"*******************************************************************************************************");
+				"*********************************************************************************************************************************************************");
 		logger.info(
-				"*******************************************************************************************************");
+				"*********************************************************************************************************************************************************");
 	}
 
 }
