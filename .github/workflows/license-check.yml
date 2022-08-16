@@ -1,0 +1,58 @@
+
+name: License Check
+
+on: 
+  workflow_call:
+  
+jobs:
+  License-Check:
+    runs-on: ubuntu-latest
+
+    services:
+      fossology:
+        image: fossology/fossology:3.10.0
+        ports:
+        - 7100:80
+    
+    steps:
+      - name: Get license engine
+        uses: actions/checkout@v3
+        with:
+            repository: OpenTOSCA/license-engine
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+          
+      - name: Build license engine with Maven
+        run: mvn package
+        
+      - name: Download .license_ignorefiles file
+        continue-on-error: true
+        uses: carlosperate/download-file-action@v1
+        with:
+          file-url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/.license_ignorefiles'
+          file-name: '.license_ignorefiles'
+          
+      - name: Get defined license of repository
+        id: get_repo_license
+        continue-on-error: true
+        uses: octokit/request-action@v2.x        
+        with:
+          route: GET /repos/${{ github.repository }}/license 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Echo defined license of repository
+        if: steps.get_repo_license.outcome == 'success'
+        run: "echo defined license: ${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}"
+          
+      - name: Run License Engine with predefined license to be checked against
+        if: steps.get_repo_license.outcome == 'success'
+        run: java -jar target/licenseengine-0.0.1-SNAPSHOT.jar --repo=$GITHUB_REPOSITORY --branch=$GITHUB_REF_NAME --license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
+        
+      - name: Run License Engine without predefined license to be checked against
+        if: steps.get_repo_license.outcome != 'success'
+        run: java -jar target/licenseengine-0.0.1-SNAPSHOT.jar --repo=$GITHUB_REPOSITORY --branch=$GITHUB_REF_NAME
