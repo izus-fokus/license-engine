@@ -5,13 +5,38 @@
 
 Run `mvn package` to build a Fat JAR.
 
-## Run
+## Run (Standalone)
 
 Use `docker-compose up` to start the License-Engine as well as a Fossology instance using Docker. 
 
 ### Endpoints
 - License-Engine: `http://localhost:9000/swagger-ui.html`
 - Fossology: `http://localhost:8081/repo`
+
+## Integration (in GitHub workflows)
+
+The License-Engine can be used within a GitHub workflow to check if the used licenses are compatible (i) to each other and (ii) to the defined license of the repository.
+
+### Usage
+```
+jobs:
+  call-license-check-workflow:
+    uses: OpenTOSCA/license-engine/.github/workflows/license-check.yml@main
+```
+### Ignore files
+
+In case some files should be ignored, e.g. because they are only used for testing or building the software, a `.license_ignorefiles` file can be placed in the root directory.
+The files to be ignored should be listed line by line. `*` can be used as a placeholder.
+
+Examples:<br/>
+To ignore the file `/src/test/helloWorldTest.java`, the `.license_ignorefiles` file should have this entry:
+`/src/test/helloWorldTest.java`
+<br/>
+To ignore all `.java` files, the `.license_ignorefiles` file should have this entry:
+`*.java`
+<br/>
+To ignore the specific folder `/test/`, the `.license_ignorefiles` file should have this entry:
+`*/test/*`
 
 ## Haftungsausschluss
 
