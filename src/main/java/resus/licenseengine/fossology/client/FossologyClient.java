@@ -209,7 +209,7 @@ public class FossologyClient {
 
 		Analysis analysisConfig = new Analysis();
 		analysisConfig.setBucket(false);
-		analysisConfig.setCopyrightEmailAuthor(true);
+		analysisConfig.setCopyrightEmailAuthor(false);
 		analysisConfig.setEcc(false);
 		analysisConfig.setKeyword(false);
 		analysisConfig.setMime(false);
@@ -219,7 +219,7 @@ public class FossologyClient {
 		analysisConfig.setPackage(true);
 
 		LicenseDecider deciderConfig = new LicenseDecider();
-		deciderConfig.setBulkReused(true);
+		deciderConfig.setBulkReused(false);
 		deciderConfig.setNewScanner(true);
 		deciderConfig.setNomosMonk(true);
 		deciderConfig.setOjoDecider(true);

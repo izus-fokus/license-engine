@@ -32,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 public class Software {
 
+	private final String unknownLicense = "UNKNOWN LICENSE";
+
 	@JsonProperty(required = true)
 	private String id;
 	@JsonProperty(required = true)
@@ -49,6 +51,9 @@ public class Software {
 	@JsonIgnore
 	private List<String> excludedFiles = new ArrayList<String>();
 
+	@JsonIgnore
+	private List<String> filesWithUnknownLicense = new ArrayList<String>();
+
 	public Software(String id, String name, String url) {
 		this.id = id;
 		this.name = name;
@@ -63,6 +68,11 @@ public class Software {
 	@JsonProperty(value = "filesExcluded", access = Access.READ_ONLY)
 	public Integer getExcludedFilesCount() {
 		return excludedFiles.size();
+	}
+
+	@JsonProperty(value = "filesWithUnknownLicense", access = Access.READ_ONLY)
+	public Integer getFilesWithAnUnknownLicenseCount() {
+		return filesWithUnknownLicense.size();
 	}
 
 	@JsonProperty(value = "licensesEffective", access = Access.READ_ONLY)
@@ -130,7 +140,26 @@ public class Software {
 	 * @param licenseFilesMapping the licenseFilesMapping to set
 	 */
 	public void setLicenseFilesMapping(Map<String, List<String>> licenseFilesMapping) {
-		this.licensesToFilesMapping = licenseFilesMapping;
+		List<String> files;
+		String license;
+		for (Entry<String, List<String>> licenseFilesEntry : licenseFilesMapping.entrySet()) {
+			license = licenseFilesEntry.getKey();
+			files = licenseFilesEntry.getValue();
+			if (license.equals("NULL LICENSE")) {
+				this.addExcludedFiles(files);
+				this.licensesToFilesMapping.put(license, files);
+			} else if (license.startsWith("LicenseRef-")) {
+				this.addExcludedFiles(files);
+				this.addFilesWithUnknownLicense(files);
+				if (this.licensesToFilesMapping.containsKey(unknownLicense)) {
+					this.licensesToFilesMapping.get(unknownLicense).addAll(files);
+				} else {
+					this.licensesToFilesMapping.put(unknownLicense, files);
+				}
+			} else {
+				this.licensesToFilesMapping.put(license, files);
+			}
+		}
 	}
 
 	/**
@@ -221,7 +250,9 @@ public class Software {
 	 * @param excludedFiles the excludedFiles to set
 	 */
 	public void addExcludedFiles(List<String> excludedFiles) {
-		this.excludedFiles.addAll(excludedFiles);
+		if (excludedFiles != null) {
+			this.excludedFiles.addAll(excludedFiles);
+		}
 	}
 
 	/**
@@ -229,6 +260,58 @@ public class Software {
 	 */
 	public void clearExcludedFiles() {
 		this.excludedFiles.clear();
+	}
+
+	/**
+	 * @param filesWithUnknownLicense files with an unknown license to add to the
+	 *                                list
+	 */
+	public void addFilesWithUnknownLicense(List<String> filesWithUnknownLicense) {
+		if (filesWithUnknownLicense != null) {
+			this.filesWithUnknownLicense.addAll(filesWithUnknownLicense);
+		}
+	}
+
+	/**
+	 * @return the filesWithUnknownLicense
+	 */
+	public List<String> getFilesWithUnknownLicense() {
+		return filesWithUnknownLicense;
+	}
+
+	/**
+	 * Sets the licenses for files with an unknown license
+	 * 
+	 * @throws Exception
+	 */
+	public void setLicensesForFiles(Map<String, List<String>> licenseFilesMap) throws Exception {
+		String license;
+		List<String> files;
+		for (Entry<String, List<String>> licenseFilesEntry : licenseFilesMap.entrySet()) {
+			license = licenseFilesEntry.getKey();
+			files = licenseFilesEntry.getValue();
+
+			if (licensesToFilesMapping.containsKey(unknownLicense)) {
+				if (licensesToFilesMapping.get(unknownLicense).containsAll(files)) {
+					licensesToFilesMapping.get(unknownLicense).removeAll(files);
+				} else {
+					throw new Exception("Files (" + files + ") already have specified licenses!");
+				}
+			} else {
+				throw new Exception("Files (" + files + ") don't have an unknown license!");
+			}
+
+			if (licensesToFilesMapping.containsKey(license)) {
+				licensesToFilesMapping.get(license).addAll(files);
+			} else {
+				licensesToFilesMapping.put(license, files);
+			}
+			excludedFiles.removeAll(files);
+			filesWithUnknownLicense.removeAll(files);
+		}
+		if (filesWithUnknownLicense.isEmpty()) {
+			licensesToFilesMapping.remove(unknownLicense);
+		}
 	}
 
 	private static HashMap<String, List<String>> deepCopyMap(Map<String, List<String>> licensesToFilesMapping) {
@@ -239,4 +322,5 @@ public class Software {
 		}
 		return copy;
 	}
+
 }
