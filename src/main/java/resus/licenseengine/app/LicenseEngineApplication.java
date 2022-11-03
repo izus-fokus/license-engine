@@ -78,6 +78,8 @@ public class LicenseEngineApplication {
 
 		@Value("${server.port}")
 		String port;
+		@Value("${server.endpoints.base.path}")
+		String basePath;
 		@Value("${server.endpoints.software.path}")
 		String softwarepath;
 		@Value("${server.endpoints.licenses.path}")
@@ -110,7 +112,7 @@ public class LicenseEngineApplication {
 				logger.info("Available endpoints:");
 				logger.info("http://localhost:" + port + softwarepath);
 				logger.info("http://localhost:" + port + licensepath);
-				logger.info("http://localhost:" + port + "/actuator/health");
+				logger.info("http://localhost:" + port + basePath + "/health");
 				logger.info("Endpoint documentation:");
 				logger.info("http://localhost:" + port + "/swagger-ui.html");
 				logger.info(
