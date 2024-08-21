@@ -41,7 +41,7 @@ public class Software {
 	private String id;
 	@JsonProperty(required = true)
 	private String name;
-	@JsonProperty(required = true)
+	@JsonProperty(required = false)
 	private String url;
 	@JsonProperty(required = false)
 	private String branch;
@@ -65,10 +65,9 @@ public class Software {
 		this.url = url;
 	}
 
-	public Software(String id, Attachment file) {
+	public Software(String id, String name) {
 		this.id = id;
-		this.att = file;
-		this.name = Integer.toString(this.att.hashCode());
+		this.name = name;
 	}
 
 	@JsonProperty(value = "licensesAll", access = Access.READ_ONLY)

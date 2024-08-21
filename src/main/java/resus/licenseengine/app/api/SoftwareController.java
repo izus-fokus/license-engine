@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import org.springframework.web.server.ResponseStatusException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,6 +53,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import resus.licenseengine.app.LicenseEngine;
 import resus.licenseengine.app.model.ProcessingStatus;
 import resus.licenseengine.app.model.Software;
+
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
 @RestController
 @RequestMapping(value = "${server.endpoints.software.path}", consumes = { MediaType.APPLICATION_JSON }, produces = {
@@ -81,6 +85,40 @@ public class SoftwareController {
 
 		String softwareID = software.getId();
 
+		logger.debug("Creating new software with ID {}...", softwareID);
+
+		if (LicenseEngine.addSoftware(softwareID, software)) {
+			logger.debug("A new software with ID {} was created.", softwareID);
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Location", softwareEndpoint + "/status/" + softwareID);
+			return new ResponseEntity<String>(headers, HttpStatus.ACCEPTED);
+
+		}
+		logger.debug("A software with ID {} is already available.", softwareID);
+		throw new ResponseStatusException(HttpStatus.CONFLICT, "A software with the given ID was already created!");
+
+	}
+
+	/**
+	 * Creates a new software upload.
+	 *
+	 */
+	@PostMapping(path = "/upload", produces = { MediaType.TEXT_PLAIN })
+	@Operation(summary = "Add a new software upload for checking for licenses.")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", headers = {
+			@Header(name = HttpHeaders.LOCATION, description = "URL to check the status of the request") }, content = @Content, description = "OK. Request is queued for processing. Check location header."),
+			@ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = Void.class)), description = "Request can't be processed. Check the response message for more information."),
+			@ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = Void.class)), description = "Some unexpected error occurred. Check the response message for more information.") })
+	public ResponseEntity<String> uploadSoftware(@RequestBody final Software software,
+			@Multipart(value = "fileInput", required = false) Attachment fileUpload) {
+
+		if (!LicenseEngine.isFossologyAvailable()) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"No running fossology instance for checking the licenses can be found or is accessible. Processing aborted!");
+		}
+
+		String softwareID = software.getId();
+		software.setAtt(fileUpload);
 		logger.debug("Creating new software with ID {}...", softwareID);
 
 		if (LicenseEngine.addSoftware(softwareID, software)) {
