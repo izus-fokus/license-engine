@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,19 @@ public class LicenseEngineCLI {
 			logger.info("Branch: {}", branch);
 			software.setBranch(branch);
 		}
+		return checkSoftware(software, license);
+	}
+
+	public static Integer checkFile(Attachment att, String license) {
+
+		Software software = new Software(RandomStringUtils.randomNumeric(8), att);
+
+		logger.info("Starting the licenses check for file: {} ...", att);
+
+		return checkSoftware(software, license);
+	}
+
+	public static Integer checkSoftware(Software software, String license) {
 
 		if (!LicenseEngine.isFossologyAvailable()) {
 			return 1;

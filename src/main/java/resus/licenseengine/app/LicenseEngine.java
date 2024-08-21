@@ -87,7 +87,9 @@ public class LicenseEngine {
 		software.setStatus(ProcessingStatus.UPLOADING);
 
 		Integer uploadID = null;
-		if (software.getBranch() != null || software.getUrl().startsWith("https://github.com/")
+		if (software.getAtt() != null) {
+			uploadID = fossologyClient.uploadFile(software.getAtt(), software.getName());
+		} else if (software.getBranch() != null || software.getUrl().startsWith("https://github.com/")
 				|| software.getUrl().startsWith("http://github.com/")) {
 			uploadID = fossologyClient.uploadVCS(software.getUrl(), software.getBranch(), software.getName());
 		} else {

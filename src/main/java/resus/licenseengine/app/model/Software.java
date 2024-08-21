@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -49,6 +52,8 @@ public class Software {
 	@JsonIgnore
 	private Map<String, List<String>> licensesToFilesMapping = new HashMap<String, List<String>>();
 	@JsonIgnore
+	private Attachment att;
+	@JsonIgnore
 	private List<String> excludedFiles = new ArrayList<String>();
 
 	@JsonIgnore
@@ -58,6 +63,12 @@ public class Software {
 		this.id = id;
 		this.name = name;
 		this.url = url;
+	}
+
+	public Software(String id, Attachment file) {
+		this.id = id;
+		this.att = file;
+		this.name = Integer.toString(this.att.hashCode());
 	}
 
 	@JsonProperty(value = "licensesAll", access = Access.READ_ONLY)
@@ -188,6 +199,20 @@ public class Software {
 	 */
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	/**
+	 * @return the attachment
+	 */
+	public Attachment getAtt() {
+		return att;
+	}
+
+	/**
+	 * @param att the attachment to set
+	 */
+	public void setAtt(Attachment att) {
+		this.att = att;
 	}
 
 	/**

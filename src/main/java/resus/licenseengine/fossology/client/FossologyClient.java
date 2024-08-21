@@ -29,6 +29,7 @@ import java.util.UUID;
 import javax.ws.rs.InternalServerErrorException;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,7 @@ import resus.licenseengine.fossology.model.TokenRequest;
 import resus.licenseengine.fossology.model.TokenRequest.TokenScopeEnum;
 import resus.licenseengine.fossology.model.UrlUpload;
 import resus.licenseengine.fossology.model.VcsUpload;
+import resus.licenseengine.fossology.model.Upload;
 
 public class FossologyClient {
 
@@ -189,6 +191,34 @@ public class FossologyClient {
 
 		try {
 			Info info = uploadApi.uploadsPost(token, 1, description, "public", true, null, "url", urlUpload);
+			id = Integer.parseInt(info.getMessage());
+			logger.debug("JobID: {}", id);
+		} catch (InternalServerErrorException e) {
+			logger.warn("Upload failed: {}", e);
+		}
+
+		return id;
+	}
+
+	/**
+	 * 
+	 * Uploads a software from a given URL to fossology.
+	 * 
+	 * @param file        where the software is located
+	 * @param description
+	 * @return the ID of this upload job
+	 */
+	public Integer uploadFile(Attachment file, String description) {
+
+		Upload Upload = new Upload();
+		Upload.setDescription(description);
+
+		logger.debug("Uploading software...: {} from file with : {}.", description, file.hashCode());
+
+		Integer id = null;
+
+		try {
+			Info info = uploadApi.uploadsPost(token, 1, file, description, "public", true, null, "file");
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
