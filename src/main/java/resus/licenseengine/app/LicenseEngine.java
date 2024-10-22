@@ -41,7 +41,8 @@ import resus.licenseengine.fossology.client.FossologyClient;
 import resus.licenseengine.recommender.client.LicenseRecommenderClient;
 import resus.licenseengine.utils.LicenseUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import javax.ws.rs.core.MultivaluedHashMap;
+import org.apache.cxf.jaxrs.impl.MetadataMap;
+
 import javax.ws.rs.core.MultivaluedMap;
 
 @Component
@@ -94,18 +95,18 @@ public class LicenseEngine {
 		logger.debug("LicenseEngine in Start Processing function {}", software.getClass().getName());
 		if (software.getClass().getName().equals("resus.licenseengine.app.model.SoftwareUpload")) {
 			SoftwareUpload softwareUpload = (SoftwareUpload) software;
-			MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
-			// headers = new MultivaluedHashMap();
-			headers.add("Content-Type", softwareUpload.getAtt().getContentType());
+			MultivaluedMap<String, String> headers = new MetadataMap<>();
+//        	headers.putSingle("Content-Type", softwareUpload.getAtt().getContentType());
+        	headers.putSingle("Content-Type", "application/octet-stream");
+			headers.putSingle("Content-ID", software.getId());
 			try {
 				logger.debug("LicenseEngine in Start Processing function");
-				Attachment att = new Attachment(softwareUpload.getAtt().getInputStream(), headers);
+				Attachment att = new Attachment(headers, softwareUpload.getAtt().getInputStream());
 				logger.debug("Attachment {}", att.getContentType());
 				uploadID = fossologyClient.uploadFile(att, software.getName());
 
 			} catch (Exception e) {
-				logger.warn(e.toString());
-				logger.warn("Uploading software to fossology failed");
+				logger.warn("Uploading software to fossology failed: {}", e.toString());
 
 			}
 

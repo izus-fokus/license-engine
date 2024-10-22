@@ -52,6 +52,8 @@ import resus.licenseengine.fossology.model.UrlUpload;
 import resus.licenseengine.fossology.model.VcsUpload;
 import resus.licenseengine.fossology.model.Upload;
 
+
+
 public class FossologyClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(FossologyClient.class);
@@ -214,15 +216,18 @@ public class FossologyClient {
 		Upload.setDescription(description);
 
 		logger.debug("Uploading software...: {} from file with : {}.", description, file.hashCode());
-		logger.debug("File{}{}", file.getContentType(), file.getContentId());
+		logger.debug("File Content-Type: {} Content-ID: {}", file.getContentType(), file.getContentId());
 		Integer id = null;
 
 		try {
+			logger.debug("Uploading with token {}, description {}", token, description);
+
 			Info info = uploadApi.uploadsPost(token, 1, file, description, "public", true, null, "file");
+			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
-			logger.warn("Upload failed: {}", e);
+			logger.warn("Upload failed: {}", e.toString());
 		}
 
 		return id;

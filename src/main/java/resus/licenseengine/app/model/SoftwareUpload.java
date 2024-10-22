@@ -38,8 +38,9 @@ public class SoftwareUpload extends Software {
 	// this.url = url;
 	// }
 
-	public SoftwareUpload(String id, String name) {
+	public SoftwareUpload(String id, String name, MultipartFile attachment) {
 		super(id, name, new String());
+		this.setAtt(attachment);
 	}
 
 	/**

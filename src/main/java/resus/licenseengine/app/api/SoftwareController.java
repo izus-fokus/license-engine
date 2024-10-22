@@ -22,10 +22,12 @@ package resus.licenseengine.app.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import java.io.InputStream;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +58,10 @@ import resus.licenseengine.app.model.Software;
 import resus.licenseengine.app.model.SoftwareUpload;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import java.io.InputStream;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD5;
+import org.apache.commons.codec.digest.DigestUtils;
+
 
 @RestController
 @RequestMapping(value = "${server.endpoints.software.path}", consumes = { MediaType.APPLICATION_JSON }, produces = {
@@ -118,14 +123,25 @@ public class SoftwareController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"No running fossology instance for checking the licenses can be found or is accessible. Processing aborted!");
 		}
-		String id = "someid";
-		String name = "somename";
+
+		String md5Hash = new String("");
+		try {
+			md5Hash = new DigestUtils(MD5).md5Hex(fileUpload.getInputStream());
+		}
+		catch (Exception e) {
+			logger.warn("MD5 Hash could not be calculated from Input Stream: {}", e.toString());
+			md5Hash = UUID.randomUUID().toString();
+		}
+		
+
+
+		String id = md5Hash;
+		String name = "uploaded_" + md5Hash;
 		// InputStream is = fileUpload.getInputStream();
 		// Attachment att = new Attachment(is, headers);
 
-		SoftwareUpload software = new SoftwareUpload(id, name);
+		SoftwareUpload software = new SoftwareUpload(id, name, fileUpload);
 		String softwareID = software.getId();
-		software.setAtt(fileUpload);
 		logger.debug("Creating new software with ID {}...", softwareID);
 		logger.debug("File information {}", fileUpload.getName());
 		logger.debug("File information {}", fileUpload.getSize());

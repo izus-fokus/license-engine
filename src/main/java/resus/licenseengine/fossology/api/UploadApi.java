@@ -172,7 +172,7 @@ public interface UploadApi {
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
 	public Info uploadsPost(@HeaderParam("Authorization") String authorization,
 			@HeaderParam("folderId") Integer folderId,
-			@Multipart(value = "fileInput", required = false) Attachment fileInputDetail,
+			@Multipart(value = "fileInput", type = "application/octet-stream") Attachment fileInputDetail,
 			@HeaderParam("uploadDescription") String uploadDescription, @HeaderParam("public") String _public,
 			@HeaderParam("ignoreScm") Boolean ignoreScm, @HeaderParam("groupName") String groupName,
 			@HeaderParam("uploadType") String uploadType);
