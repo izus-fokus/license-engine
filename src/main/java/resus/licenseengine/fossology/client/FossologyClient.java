@@ -214,7 +214,7 @@ public class FossologyClient {
 		Upload.setDescription(description);
 
 		logger.debug("Uploading software...: {} from file with : {}.", description, file.hashCode());
-
+		logger.debug("File{}{}", file.getContentType(), file.getContentId());
 		Integer id = null;
 
 		try {
