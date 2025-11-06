@@ -19,7 +19,7 @@
 		<java.version>1.8</java.version>
 		<spdx.version>2.2.1</spdx.version>
 		<cxf.version>3.2.4</cxf.version>
-		<springdoc.version>1.5.2</springdoc.version>
+		<springdoc.version>1.8.0</springdoc.version>
 		<openapitools.version>5.2.0</openapitools.version>
 	</properties>
 
