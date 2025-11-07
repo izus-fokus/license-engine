@@ -45,10 +45,11 @@
 			<artifactId>cxf-rt-rs-client</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>tools.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>3.0.1</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>

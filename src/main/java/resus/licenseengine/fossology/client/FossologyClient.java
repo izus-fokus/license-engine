@@ -26,14 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JakartaJsonProvider;
 import jakarta.ws.rs.InternalServerErrorException;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import resus.licenseengine.fossology.api.DefaultApi;
 import resus.licenseengine.fossology.api.JobApi;
@@ -78,8 +78,8 @@ public class FossologyClient {
 		logger.debug("Creating new fossology client for endpoint: {}, username: {}, and password: {} ....", endpoint,
 				username, password);
 
-		JacksonJsonProvider provider = new JacksonJsonProvider();
-		List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
+        JacksonJsonProvider provider = new JacksonJsonProvider();
+		List<JacksonJsonProvider> providers = new ArrayList<>();
 		providers.add(provider);
 		defaultApi = JAXRSClientFactory.create(endpoint, DefaultApi.class, providers);
 		uploadApi = JAXRSClientFactory.create(endpoint, UploadApi.class, providers);

@@ -119,9 +119,12 @@ public class LicenseEngineApplication {
 						"(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p "
 								+ fossPort + ":80 fossology/fossology:3.10.0)");
 				logger.info("******************************************");
-
+                if (LicenseEngine.isFossologyAvailable()) {
+                    logger.info("Fossology is available");
+                } else {
+                    logger.warn("Fossology is not available");
+                }
 			}
-
 		}
 	}
 

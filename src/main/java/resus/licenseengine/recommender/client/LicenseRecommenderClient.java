@@ -3,11 +3,11 @@ package resus.licenseengine.recommender.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import resus.licenseengine.recommender.api.AccessingInformationFromTheLicenseOntologyApi;
 import resus.licenseengine.recommender.model.License;

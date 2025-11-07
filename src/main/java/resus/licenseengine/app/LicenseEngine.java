@@ -207,6 +207,7 @@ public class LicenseEngine {
 		if (fossologyClient == null) {
 			try {
 				fossologyClient = new FossologyClient(fossologyEndpoint, fossologyUsername, fossologyPassword);
+                return true;
 			} catch (Exception e) {
 				logger.warn(e.toString());
 			}
