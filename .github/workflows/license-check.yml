@@ -15,7 +15,7 @@ jobs:
       fossology:
         image: fossology/fossology:3.10.0
         ports:
-        - 7100:80
+          - 7100:80
     
     steps:
       - name: Get license engine
