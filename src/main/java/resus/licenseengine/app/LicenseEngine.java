@@ -43,7 +43,7 @@ import resus.licenseengine.utils.LicenseUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 @Component
 public class LicenseEngine {

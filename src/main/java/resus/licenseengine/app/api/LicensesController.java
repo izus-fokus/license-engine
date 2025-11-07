@@ -21,7 +21,7 @@ package resus.licenseengine.app.api;
 
 import java.util.Arrays;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
