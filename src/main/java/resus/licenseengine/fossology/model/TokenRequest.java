@@ -8,23 +8,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TokenRequest {
 
-    @Schema(required = true, description = "Username of the login user.")
+    @Schema(description = "Username of the login user.")
     /**
      * Username of the login user.
      **/
     private String username = null;
 
-    @Schema(required = true, description = "Password of the user trying to login.")
+    @Schema(description = "Password of the user trying to login.")
     /**
      * Password of the user trying to login.
      **/
     private String password = null;
 
-    @Schema(required = true, description = "Friendly name of the token")
+    @Schema(description = "Friendly name of the token")
     /**
      * Friendly name of the token
      **/
-    private String tokenName = null;
+    private String token_name = null;
 
     public enum TokenScopeEnum {
         READ("read"),
@@ -57,17 +57,17 @@ public class TokenRequest {
         }
     }
 
-    @Schema(required = true, description = "The scope of the token.")
+    @Schema(description = "The scope of the token.")
     /**
      * The scope of the token.
      **/
-    private TokenScopeEnum tokenScope = null;
+    private TokenScopeEnum token_scope = null;
 
-    @Schema(required = true, description = "Date when the token must expire (default max 30 days).")
+    @Schema(description = "Date when the token must expire (default max 30 days).")
     /**
      * Date when the token must expire (default max 30 days).
      **/
-    private String tokenExpire = null;
+    private String token_expire = null;
 
     /**
      * Username of the login user.
@@ -113,16 +113,16 @@ public class TokenRequest {
      * @return tokenName
      **/
     @JsonProperty("token_name")
-    public String getTokenName() {
-        return tokenName;
+    public String getToken_name() {
+        return token_name;
     }
 
-    public void setTokenName(String tokenName) {
-        this.tokenName = tokenName;
+    public void setToken_name(String token_name) {
+        this.token_name = token_name;
     }
 
     public TokenRequest tokenName(String tokenName) {
-        this.tokenName = tokenName;
+        this.token_name = tokenName;
         return this;
     }
 
@@ -132,19 +132,19 @@ public class TokenRequest {
      * @return tokenScope
      **/
     @JsonProperty("token_scope")
-    public String getTokenScope() {
-        if (tokenScope == null) {
+    public String getToken_scope() {
+        if (token_scope == null) {
             return null;
         }
-        return tokenScope.getValue();
+        return token_scope.getValue();
     }
 
-    public void setTokenScope(TokenScopeEnum tokenScope) {
-        this.tokenScope = tokenScope;
+    public void setToken_scope(TokenScopeEnum token_scope) {
+        this.token_scope = token_scope;
     }
 
     public TokenRequest tokenScope(TokenScopeEnum tokenScope) {
-        this.tokenScope = tokenScope;
+        this.token_scope = tokenScope;
         return this;
     }
 
@@ -154,32 +154,30 @@ public class TokenRequest {
      * @return tokenExpire
      **/
     @JsonProperty("token_expire")
-    public String getTokenExpire() {
-        return tokenExpire;
+    public String getToken_expire() {
+        return token_expire;
     }
 
-    public void setTokenExpire(String tokenExpire) {
-        this.tokenExpire = tokenExpire;
+    public void setToken_expire(String token_expire) {
+        this.token_expire = token_expire;
     }
 
     public TokenRequest tokenExpire(String tokenExpire) {
-        this.tokenExpire = tokenExpire;
+        this.token_expire = tokenExpire;
         return this;
     }
 
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class TokenRequest {\n");
 
-        sb.append("    username: ").append(toIndentedString(username)).append("\n");
-        sb.append("    password: ").append(toIndentedString(password)).append("\n");
-        sb.append("    tokenName: ").append(toIndentedString(tokenName)).append("\n");
-        sb.append("    tokenScope: ").append(toIndentedString(tokenScope)).append("\n");
-        sb.append("    tokenExpire: ").append(toIndentedString(tokenExpire)).append("\n");
-        sb.append("}");
-        return sb.toString();
+        return "class TokenRequest {\n" +
+                "    username: " + toIndentedString(username) + "\n" +
+                "    password: " + toIndentedString(password) + "\n" +
+                "    token_name: " + toIndentedString(token_name) + "\n" +
+                "    token_scope: " + toIndentedString(token_scope) + "\n" +
+                "    token_expire: " + toIndentedString(token_expire) + "\n" +
+                "}";
     }
 
     /**

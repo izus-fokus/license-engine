@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JakartaJsonProvider;
 import jakarta.ws.rs.InternalServerErrorException;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -129,14 +128,20 @@ public class FossologyClient {
 		TokenRequest tokenreq = new TokenRequest();
 		tokenreq.setPassword(username);
 		tokenreq.setUsername(password);
-		tokenreq.setTokenName(UUID.randomUUID().toString());
-		tokenreq.setTokenScope(TokenScopeEnum.WRITE);
-		tokenreq.setTokenExpire(LocalDate.now().plusDays(30).toString());
+		tokenreq.setToken_name(UUID.randomUUID().toString());
+		tokenreq.setToken_scope(TokenScopeEnum.WRITE);
+		tokenreq.setToken_expire(LocalDate.now().plusDays(30).toString());
 
-		DefaultResponse response = defaultApi.tokensPost(tokenreq);
-		String token = response.getAuthorization();
+        try {
+            DefaultResponse response = defaultApi.tokensPost(tokenreq);
+            String token = response.getAuthorization();
 
-		logger.debug("Authorization token created: {}", token);
+            logger.debug("Authorization token created: {}", token);
+        } catch (Exception e){
+            logger.info(e.toString());
+        }
+
+
 
 		return token;
 	}
