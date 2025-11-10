@@ -8,6 +8,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TokenRequest {
 
+    public TokenRequest() {}
+
+    public TokenRequest(String username, String password, String token_name, String token_expire, TokenScopeEnum token_scope) {
+        this.username = username;
+        this.password = password;
+        this.token_name = token_name;
+        this.token_expire = token_expire;
+        this.token_scope = token_scope;
+    }
+
     @Schema(description = "Username of the login user.")
     /**
      * Username of the login user.

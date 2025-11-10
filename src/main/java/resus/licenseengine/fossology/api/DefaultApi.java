@@ -9,6 +9,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 
+import jakarta.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,8 +55,8 @@ public interface DefaultApi {
      */
     @POST
     @Path("/tokens")
-    @Consumes({"application/json", "application/x-www-form-urlencoded"})
-    @Produces({"application/json"})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Generate a new token", tags = {})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Token generated", content = @Content(schema = @Schema(implementation = DefaultResponse.class))),
