@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import jakarta.ws.rs.InternalServerErrorException;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -134,8 +132,9 @@ public class FossologyClient {
 		tokenreq.setToken_expire(LocalDate.now().plusDays(30).toString());
 
         String token = null;
+        DefaultResponse response = null;
         try {
-            DefaultResponse response = defaultApi.tokensPost(tokenreq);
+            response = defaultApi.tokensPost(tokenreq);
             token = response.getAuthorization();
 
             logger.debug("Authorization token created: {}", token);
@@ -143,7 +142,11 @@ public class FossologyClient {
             logger.info(e.toString());
         }
 
-		return token;
+        if( response != null ) {
+            return token;
+        } else {
+            throw new Exception();
+        }
 	}
 
 	/**
