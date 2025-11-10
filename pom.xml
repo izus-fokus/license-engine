@@ -19,7 +19,7 @@
 		<java.version>17</java.version>
 		<spdx.version>2.2.8</spdx.version>
 		<cxf.version>4.1.3</cxf.version>
-		<springdoc.version>1.8.0</springdoc.version>
+		<springdoc.version>2.8.14</springdoc.version>
 		<openapitools.version>5.2.0</openapitools.version>
 	</properties>
 
@@ -67,11 +67,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>${springdoc.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
