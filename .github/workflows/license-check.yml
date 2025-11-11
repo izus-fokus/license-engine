@@ -26,20 +26,24 @@ jobs:
       - name: Clear the cache
         run: docker builder prune --force
 
-      - name: Clear the cache
-        run: docker image prune --all --force
-
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag license-engine:0.0.1
 
-      - name: Pytest in container
+      - name: Run license engine
         run: docker run -d --name=licenseengine -p 7000:7000 license-engine:0.0.1
 
       - name: Sleep for 10 seconds
         run: sleep 10s
 
-      - name: Sleep for 10 seconds
+      - name: Health check
         run: curl -X GET http://localhost:7000/api/v1/health
+
+      - name: Stop and remove container
+        if: always()
+        run: docker stop licenseengine
+
+      - name: Clear the cache
+        run: docker image prune --all --force
         
 #      - name: Download .license_ignorefiles file
 #        continue-on-error: true
