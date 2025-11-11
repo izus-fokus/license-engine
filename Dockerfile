@@ -1,12 +1,12 @@
-FROM maven:3-jdk-8 as builder
+FROM maven:3.9.11-amazoncorretto-17-debian-trixie AS builder
 
-WORKDIR /tmp/resus/licenseengine
-COPY . /tmp/resus/licenseengine
+WORKDIR /licenseengine
+COPY . /licenseengine
 
 RUN mvn clean package    
     
-From openjdk:8
+FROM maven:3.9.11-amazoncorretto-17-debian-trixie
 
-copy --from=builder /tmp/resus/licenseengine/target/licenseengine-0.0.1-SNAPSHOT.jar licenseengine.jar
+COPY --from=builder /licenseengine/target/licenseengine-0.0.1-SNAPSHOT.jar licenseengine.jar
 
 ENTRYPOINT  ["java","-jar","licenseengine.jar"]

@@ -1,21 +1,30 @@
 version: '3'
 services:
-    fossology:
-        container_name: fossology
-        image: fossology/fossology:3.10.0
-        ports:
-            - 7100:80
-        networks:
-            - resus
     license-engine:
+        image: license-engine:0.0.1
         container_name: license-engine
         build: .
+        depends_on:
+            fossology:
+                condition: service_healthy
         ports:
             - 7000:7000
         networks:
             - resus
         environment:
             - FOSSOLOGY_ENDPOINT_BASE_PATH=http://fossology:80
+    fossology:
+        container_name: fossologydev
+        image: fossology/fossology:3.10.0
+        ports:
+            - 7100:7100
+        networks:
+            - resus
+        healthcheck:
+            test: ["CMD-SHELL", "curl http://localhost/repo/api/v1/version"]
+            interval: 10s
+            start_period: 2s
+            timeout: 3s
 networks:
   resus:
     driver: bridge
