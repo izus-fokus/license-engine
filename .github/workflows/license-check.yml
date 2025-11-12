@@ -15,7 +15,7 @@ jobs:
       fossology:
         image: fossology/fossology:3.10.0
         ports:
-          - 7100:7100
+          - 7100:80
     
     steps:
       - name: Get license engine
@@ -37,6 +37,9 @@ jobs:
 
       - name: Health check
         run: curl -X GET http://localhost:7000/api/v1/health
+
+      - name: Run tests
+        run: docker exec -i licenseengine /bin/bash -c "mvn test"
 
       - name: Stop and remove container
         if: always()
