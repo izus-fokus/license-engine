@@ -30,7 +30,7 @@ jobs:
         run: docker build . --file Dockerfile --tag license-engine:0.0.1
 
       - name: Run license engine
-        run: docker run -d --name=licenseengine -p 7000:7000 license-engine:0.0.1
+        run: docker run -d --name=license-engine -p 7000:7000 license-engine:0.0.1
 
       - name: Sleep for 10 seconds
         run: sleep 10s
@@ -39,11 +39,11 @@ jobs:
         run: curl -X GET http://localhost:7000/api/v1/health
 
       - name: Run tests
-        run: docker exec -i licenseengine /bin/bash -c "mvn test"
+        run: docker exec -i license-engine /bin/bash -c "mvn test"
 
       - name: Stop and remove container
         if: always()
-        run: docker stop licenseengine
+        run: docker stop license-engine
 
       - name: Clear the cache
         run: docker image prune --all --force
