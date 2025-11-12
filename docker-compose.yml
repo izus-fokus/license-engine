@@ -8,7 +8,7 @@ services:
             fossology:
                 condition: service_healthy
         ports:
-            - 7000:7000
+            - "127.0.0.1:7000:7000"
         networks:
             - resus
         environment:
@@ -17,7 +17,7 @@ services:
         container_name: fossologydev
         image: fossology/fossology:3.10.0
         ports:
-            - 7100:7100
+            - "127.0.0.1:7100:80"
         networks:
             - resus
         healthcheck:
