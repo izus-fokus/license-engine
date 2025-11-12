@@ -3,7 +3,6 @@ package resus.licenseengine.app;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
 import resus.licenseengine.fossology.client.FossologyClient;
 
 import java.util.logging.Logger;
@@ -26,17 +25,17 @@ public class TestApi {
     public static void tearDownClass() {
     }
 
-    public void setUp(@Value("${fossology.endpoint}") String fossologyEndpoint,
-                      @Value("${fossology.username}") String fossologyUsername,
-                      @Value("${fossology.password}") String fossologyPassword) {
-        TestApi.fossologyEndpoint = fossologyEndpoint;
+    public void setUpFossology(String fossologyEndpoint,
+                               String fossologyUsername,
+                               String fossologyPassword) {
+        TestApi.fossologyEndpoint = fossologyEndpoint + "/repo/api/v1";
         TestApi.fossologyUsername = fossologyUsername;
         TestApi.fossologyPassword = fossologyPassword;
     }
 
     @Test
     public void fossologyIsAvailable() throws Exception {
-        setUp("http://localhost:7100/repo/api/v1","fossy", "fossy");
+        setUpFossology("http://localhost:7100","fossy", "fossy");
         FossologyClient fossologyClient = new FossologyClient(fossologyEndpoint, fossologyUsername, fossologyPassword);
         boolean isAvailable = fossologyClient.isAvailable();
         assertTrue(isAvailable);
