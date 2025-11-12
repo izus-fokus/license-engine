@@ -30,7 +30,7 @@ jobs:
         run: docker build . --file Dockerfile --tag license-engine:0.0.1
 
       - name: Run license engine
-        run: docker run -d --name=license-engine -p 7000:7000 license-engine:0.0.1
+        run: docker run -d --name=license-engine --network=host license-engine:0.0.1
 
       - name: Sleep for 10 seconds
         run: sleep 10s
