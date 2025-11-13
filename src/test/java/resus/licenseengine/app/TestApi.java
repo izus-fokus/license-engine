@@ -43,7 +43,7 @@ public class TestApi {
 
     @Test
     @Order(2)
-    public void postReplay() throws Exception {
+    public void addSoftware() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         try (InputStream is = classLoader.getResourceAsStream("replay.json")) {
             if (is == null) {
