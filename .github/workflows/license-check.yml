@@ -77,10 +77,6 @@ jobs:
         if: steps.get_repo_license.outcome != 'success'
         run: docker run -d --name=license-engine --network=host license-engine:0.0.1 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME
 
-      - name: Stop container and remove container
-        if: always()
-        run: docker stop license-engine && docker rm license-engine
-
       - name: Clear the cache
         run: docker image prune --all --force
         
