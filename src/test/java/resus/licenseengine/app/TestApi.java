@@ -66,7 +66,18 @@ public class TestApi {
         Software softResponse= LicenseEngine.getSoftware("replay");
         assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
         Set<String> licenseSet = new HashSet<>(Arrays.asList("LGPL-2.1", "MIT", "CC-BY-SA-3.0"));
+        Set<String> licenseSetAll = new HashSet<>(Arrays.asList("EPL-1.0",
+                "LGPL-2.1",
+                "CDDL-1.1",
+                "NULL LICENSE",
+                "BSD-3-Clause",
+                "GPL-2.0",
+                "Apache-2.0",
+                "MIT",
+                "CC-BY-SA-3.0",
+                "UNKNOWN LICENSE"));
         assertEquals(licenseSet,softResponse.getEffectiveLicenses());
+        assertEquals(licenseSetAll,softResponse.getAllLicenses());
         assertEquals("replay", softResponse.getName());
         assertEquals(550,softResponse.getFiles().intValue());
     }
