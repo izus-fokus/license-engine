@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2020 IAAS, University of Stuttgart.
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,8 @@
 
 package resus.licenseengine.app.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -107,7 +103,7 @@ public class Software {
 				} else if (ignoredFile.startsWith("*")) {
 					List<String> toRemoveFiles = new ArrayList<String>();
 					for (String file : licensesFilesEntry.getValue()) {
-						if (file.endsWith(ignoredFile.substring(1, ignoredFile.length()))) {
+						if (file.endsWith(ignoredFile.substring(1))) {
 							toRemoveFiles.add(file);
 						}
 					}
@@ -281,9 +277,8 @@ public class Software {
 
 	/**
 	 * Sets the licenses for files with an unknown license
-	 * 
-	 * @throws Exception
-	 */
+	 *
+     */
 	public void setLicensesForFiles(Map<String, List<String>> licenseFilesMap) throws Exception {
 		String license;
 		List<String> files;
@@ -292,7 +287,7 @@ public class Software {
 			files = licenseFilesEntry.getValue();
 
 			if (licensesToFilesMapping.containsKey(unknownLicense)) {
-				if (licensesToFilesMapping.get(unknownLicense).containsAll(files)) {
+				if (new HashSet<>(licensesToFilesMapping.get(unknownLicense)).containsAll(files)) {
 					licensesToFilesMapping.get(unknownLicense).removeAll(files);
 				} else {
 					throw new Exception("Files (" + files + ") already have specified licenses!");
