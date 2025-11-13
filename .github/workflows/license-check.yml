@@ -41,37 +41,46 @@ jobs:
       - name: Run tests
         run: docker exec -i license-engine /bin/bash -c "mvn test"
 
-      - name: Stop and remove container
+      - name: Stop container
+        if: always()
+        run: docker stop license-engine
+
+      - name: Download .license_ignorefiles file
+        continue-on-error: true
+        uses: carlosperate/download-file-action@v2
+        with:
+          file-url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/.license_ignorefiles'
+          file-name: '.license_ignorefiles'
+
+      - name: Get defined license of repository
+        id: get_repo_license
+        continue-on-error: true
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/license
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Echo defined license of repository
+        if: steps.get_repo_license.outcome == 'success'
+        run: "echo defined license: ${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}"
+
+      - name: Run License Engine with predefined license to be checked against
+        if: steps.get_repo_license.outcome == 'success'
+        run: docker run -d --name=license-engine --network=host license-engine:0.0.1 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME -e license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
+
+      - name: Stop container
+        if: always()
+        run: docker stop license-engine
+
+      - name: Run License Engine without predefined license to be checked against
+        if: steps.get_repo_license.outcome != 'success'
+        run: docker run -d --name=license-engine --network=host license-engine:0.0.1 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME
+
+      - name: Stop container
         if: always()
         run: docker stop license-engine
 
       - name: Clear the cache
         run: docker image prune --all --force
         
-#      - name: Download .license_ignorefiles file
-#        continue-on-error: true
-#        uses: carlosperate/download-file-action@v2
-#        with:
-#          file-url: 'https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/.license_ignorefiles'
-#          file-name: '.license_ignorefiles'
-#
-#      - name: Get defined license of repository
-#        id: get_repo_license
-#        continue-on-error: true
-#        uses: octokit/request-action@v2.x
-#        with:
-#          route: GET /repos/${{ github.repository }}/license
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: Echo defined license of repository
-#        if: steps.get_repo_license.outcome == 'success'
-#        run: "echo defined license: ${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}"
-#
-#      - name: Run License Engine with predefined license to be checked against
-#        if: steps.get_repo_license.outcome == 'success'
-#        run: java -jar target/licenseengine-0.0.1-SNAPSHOT.jar --repo=$GITHUB_REPOSITORY --branch=$GITHUB_REF_NAME --license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
-#
-#      - name: Run License Engine without predefined license to be checked against
-#        if: steps.get_repo_license.outcome != 'success'
-#        run: java -jar target/licenseengine-0.0.1-SNAPSHOT.jar --repo=$GITHUB_REPOSITORY --branch=$GITHUB_REF_NAME
