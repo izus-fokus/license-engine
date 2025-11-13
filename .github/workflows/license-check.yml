@@ -41,9 +41,9 @@ jobs:
       - name: Run tests
         run: docker exec -i license-engine /bin/bash -c "mvn test"
 
-      - name: Stop container
+      - name: Stop container and remove container
         if: always()
-        run: docker stop license-engine
+        run: docker stop license-engine && docker rm license-engine
 
       - name: Download .license_ignorefiles file
         continue-on-error: true
@@ -69,17 +69,17 @@ jobs:
         if: steps.get_repo_license.outcome == 'success'
         run: docker run -d --name=license-engine --network=host license-engine:0.0.1 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME -e license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
 
-      - name: Stop container
+      - name: Stop container and remove container
         if: always()
-        run: docker stop license-engine
+        run: docker stop license-engine && docker rm license-engine
 
       - name: Run License Engine without predefined license to be checked against
         if: steps.get_repo_license.outcome != 'success'
         run: docker run -d --name=license-engine --network=host license-engine:0.0.1 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME
 
-      - name: Stop container
+      - name: Stop container and remove container
         if: always()
-        run: docker stop license-engine
+        run: docker stop license-engine && docker rm license-engine
 
       - name: Clear the cache
         run: docker image prune --all --force
