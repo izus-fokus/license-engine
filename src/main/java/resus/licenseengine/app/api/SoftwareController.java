@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2020 IAAS, University of Stuttgart.
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import java.io.InputStream;
 
 import jakarta.ws.rs.core.MediaType;
 
@@ -57,9 +55,6 @@ import resus.licenseengine.app.model.ProcessingStatus;
 import resus.licenseengine.app.model.Software;
 import resus.licenseengine.app.model.SoftwareUpload;
 
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD5;
 import org.apache.commons.codec.digest.DigestUtils;
 
 
@@ -124,9 +119,9 @@ public class SoftwareController {
 					"No running fossology instance for checking the licenses can be found or is accessible. Processing aborted!");
 		}
 
-		String md5Hash = new String("");
+		String md5Hash;
 		try {
-			md5Hash = new DigestUtils(MD5).md5Hex(fileUpload.getInputStream());
+			md5Hash = DigestUtils.md5Hex(fileUpload.getInputStream());
 		}
 		catch (Exception e) {
 			logger.warn("MD5 Hash could not be calculated from Input Stream: {}", e.toString());
@@ -299,13 +294,13 @@ public class SoftwareController {
 
 		if (software != null) {
 
-			if (effective && !licenseID.equals("")) {
+			if (effective && !licenseID.isEmpty()) {
 
 				return ResponseEntity.ok(software.getEffectiveLicensesFilesMapping().get(licenseID));
 
 			}
 
-			if (!licenseID.equals("")) {
+			if (!licenseID.isEmpty()) {
 
 				return ResponseEntity.ok(software.getLicenseFilesMapping().get(licenseID));
 			}
