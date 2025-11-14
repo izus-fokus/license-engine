@@ -81,5 +81,60 @@ public class TestApi {
         assertEquals("replay", softResponse.getName());
         assertEquals(550,softResponse.getFiles().intValue());
     }
+
+    @Test
+    @Order(4)
+    public void addSoftwareDataverse() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        try (InputStream is = classLoader.getResourceAsStream("dataverse.json")) {
+            if (is == null) {
+                throw new IllegalArgumentException("Ressource nicht gefunden!");
+            }
+            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            JsonElement obj = JsonParser.parseString(content);
+            JsonObject jsonObject = obj.getAsJsonObject();
+            Software software = new Software(jsonObject.get("id").getAsString(),
+                    jsonObject.get("name").getAsString(),
+                    jsonObject.get("url").getAsString());
+            LicenseEngine.startProcessing(software);
+            LicenseEngine.addSoftware("dataverse",software);
+        }
+    }
+
+    @Test
+    @Order(5)
+    public void getSoftwareDataverse() {
+        Software softResponse= LicenseEngine.getSoftware("dataverse");
+        assertEquals("https://github.com/IQSS/dataverse.git",softResponse.getUrl());
+        Set<String> licenseSet = new HashSet<>(Arrays.asList("CC-BY-NC-3.0",
+                "CC-BY-NC-4.0",
+                "CC-BY-NC-SA-4.0",
+                "CC-BY-4.0",
+                "CC-BY-3.0",
+                "GPL-2.0",
+                "JSON",
+                "CC-BY-SA-4.0",
+                "Apache-2.0",
+                "MIT",
+                "CC0-1.0",
+                "CC-BY-ND-4.0"));
+        Set<String> licenseSetAll = new HashSet<>(Arrays.asList("CC-BY-NC-3.0",
+                "CC-BY-NC-4.0",
+                "CC-BY-NC-SA-4.0",
+                "CC-BY-4.0",
+                "NULL LICENSE",
+                "CC-BY-3.0",
+                "GPL-2.0",
+                "JSON",
+                "CC-BY-SA-4.0",
+                "Apache-2.0",
+                "MIT",
+                "CC0-1.0",
+                "CC-BY-ND-4.0",
+                "UNKNOWN LICENSE"));
+        assertEquals(licenseSet,softResponse.getEffectiveLicenses());
+        assertEquals(licenseSetAll,softResponse.getAllLicenses());
+        assertEquals("dataverse", softResponse.getName());
+    }
 }
 
