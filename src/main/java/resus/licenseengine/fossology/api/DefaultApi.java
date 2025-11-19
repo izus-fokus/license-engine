@@ -88,7 +88,7 @@ public interface DefaultApi {
      *
      */
     @GET
-    @Path("/version")
+    @Path("/info")
     @Produces({"application/json"})
     @Operation(summary = "Get the current API information", tags = {})
     @ApiResponses(value = {

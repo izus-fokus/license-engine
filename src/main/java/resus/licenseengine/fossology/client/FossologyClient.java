@@ -37,18 +37,8 @@ import resus.licenseengine.fossology.api.DefaultApi;
 import resus.licenseengine.fossology.api.JobApi;
 import resus.licenseengine.fossology.api.ReportApi;
 import resus.licenseengine.fossology.api.UploadApi;
-import resus.licenseengine.fossology.model.Analysis;
-import resus.licenseengine.fossology.model.DefaultResponse;
-import resus.licenseengine.fossology.model.Info;
-import resus.licenseengine.fossology.model.InlineResponse200;
-import resus.licenseengine.fossology.model.Job;
-import resus.licenseengine.fossology.model.LicenseDecider;
-import resus.licenseengine.fossology.model.ScanOptions;
-import resus.licenseengine.fossology.model.TokenRequest;
+import resus.licenseengine.fossology.model.*;
 import resus.licenseengine.fossology.model.TokenRequest.TokenScopeEnum;
-import resus.licenseengine.fossology.model.UrlUpload;
-import resus.licenseengine.fossology.model.VcsUpload;
-import resus.licenseengine.fossology.model.Upload;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 
@@ -56,11 +46,11 @@ public class FossologyClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(FossologyClient.class);
 
-	private DefaultApi defaultApi;
-	private UploadApi uploadApi;
-	private JobApi jobApi;
-	private ReportApi reportApi;
-	private String token;
+	private final DefaultApi defaultApi;
+	private final UploadApi uploadApi;
+	private final JobApi jobApi;
+	private final ReportApi reportApi;
+	private final String token;
 
 	/**
 	 * 
@@ -134,6 +124,7 @@ public class FossologyClient {
         String token = null;
         DefaultResponse response = null;
         try {
+            assert defaultApi != null;
             response = defaultApi.tokensPost(tokenreq);
             token = response.getAuthorization();
 
@@ -143,6 +134,7 @@ public class FossologyClient {
         }
 
         if( response != null ) {
+            assert token != null;
             return token;
         } else {
             throw new Exception();
@@ -160,18 +152,19 @@ public class FossologyClient {
 	 */
 	public Integer uploadVCS(String vcsUrl, String vcsBranch, String description) {
 
-		VcsUpload vcsUpload = new VcsUpload();
+        VcsUpload vcsUpload = new VcsUpload();
 		vcsUpload.setVcsBranch(vcsBranch);
 		vcsUpload.setVcsName(description);
 		vcsUpload.setVcsType(VcsUpload.VcsTypeEnum.GIT);
 		vcsUpload.setVcsUrl(vcsUrl);
 
+        VcsUploadWrapper vcsUploadWrapper = new VcsUploadWrapper(vcsUpload);
+
 		logger.debug("Uploading software...: {} from: {}.", description, vcsUrl);
 
 		Integer id = null;
-
 		try {
-			Info info = uploadApi.uploadsPost(token, 1, description, "public", true, null, "vcs", vcsUpload);
+			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, true,  vcsUploadWrapper.toString());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -200,7 +193,7 @@ public class FossologyClient {
 		Integer id = null;
 
 		try {
-			Info info = uploadApi.uploadsPost(token, 1, description, "public", true, null, "url", urlUpload);
+			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, true, String.valueOf(urlUpload));
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -230,7 +223,7 @@ public class FossologyClient {
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = uploadApi.uploadsPost(token, 1, file, description, "public", true, null, "file");
+			Info info = uploadApi.uploadsPost(token, "file",1, description, "public", true, true, file);
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
@@ -274,7 +267,7 @@ public class FossologyClient {
 		Info info = jobApi.jobsPost(token, 1, uploadID, null, scanOptions);
 		Integer id = Integer.parseInt(info.getMessage());
 
-		logger.debug("Starting analyzing the uploaded software with ID: {}. AnlyzeJobID: {}", uploadID, id);
+		logger.debug("Starting analyzing the uploaded software with ID: {}. AnalyzeJobID: {}", uploadID, id);
 
 		return id;
 	}

@@ -15,6 +15,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 
+import jakarta.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 
@@ -145,16 +146,20 @@ public interface UploadApi {
 	 */
 	@POST
 	@Path("/uploads")
-	@Consumes({ "application/json", "multipart/form-data" })
-	@Produces({ "application/json" })
+	@Consumes({MediaType.APPLICATION_JSON, MediaType.MULTIPART_FORM_DATA })
+	@Produces({MediaType.APPLICATION_JSON})
 	@Operation(summary = "Post new upload to FOSSology", tags = {})
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Upload is created", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
 	public Info uploadsPost(@HeaderParam("Authorization") String authorization,
-			@HeaderParam("folderId") Integer folderId, @HeaderParam("uploadDescription") String uploadDescription,
-			@HeaderParam("public") String _public, @HeaderParam("ignoreScm") Boolean ignoreScm,
-			@HeaderParam("groupName") String groupName, @HeaderParam("uploadType") String uploadType, OneOfbody body);
+                            @HeaderParam("uploadType") String uploadType,
+                            @HeaderParam("folderId") Integer folderId,
+                            @HeaderParam("uploadDescription") String uploadDescription,
+                            @HeaderParam("public") String _public,
+                            @HeaderParam("applyGlobal") Boolean applyGlobal,
+                            @HeaderParam("ignoreScm") Boolean ignoreScm,
+                            String body);
 
 	/**
 	 * Post new upload to FOSSology
@@ -171,9 +176,11 @@ public interface UploadApi {
 			@ApiResponse(responseCode = "201", description = "Upload is created", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
 	public Info uploadsPost(@HeaderParam("Authorization") String authorization,
-			@HeaderParam("folderId") Integer folderId,
-			@Multipart(value = "fileInput", type = "application/octet-stream") Attachment fileInputDetail,
-			@HeaderParam("uploadDescription") String uploadDescription, @HeaderParam("public") String _public,
-			@HeaderParam("ignoreScm") Boolean ignoreScm, @HeaderParam("groupName") String groupName,
-			@HeaderParam("uploadType") String uploadType);
+                            @HeaderParam("uploadType") String uploadType,
+                            @HeaderParam("folderId") Integer folderId,
+                            @HeaderParam("uploadDescription") String uploadDescription,
+                            @HeaderParam("public") String _public,
+                            @HeaderParam("applyGlobal") Boolean applyGlobal,
+                            @HeaderParam("ignoreScm") Boolean ignoreScm,
+                            @Multipart(value = "fileInput", type = "application/octet-stream") Attachment fileInputDetail);
 }
