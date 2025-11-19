@@ -157,8 +157,8 @@ public interface UploadApi {
                             @HeaderParam("folderId") Integer folderId,
                             @HeaderParam("uploadDescription") String uploadDescription,
                             @HeaderParam("public") String _public,
-                            @HeaderParam("applyGlobal") Boolean applyGlobal,
                             @HeaderParam("ignoreScm") Boolean ignoreScm,
+                            @HeaderParam("groupName") String groupName,
                             String body);
 
 	/**
@@ -180,7 +180,7 @@ public interface UploadApi {
                             @HeaderParam("folderId") Integer folderId,
                             @HeaderParam("uploadDescription") String uploadDescription,
                             @HeaderParam("public") String _public,
-                            @HeaderParam("applyGlobal") Boolean applyGlobal,
                             @HeaderParam("ignoreScm") Boolean ignoreScm,
+                            @HeaderParam("groupName") String groupName,
                             @Multipart(value = "fileInput", type = "application/octet-stream") Attachment fileInputDetail);
 }

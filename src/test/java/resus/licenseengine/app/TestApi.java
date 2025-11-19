@@ -62,10 +62,19 @@ public class TestApi {
 
     @Test
     @Order(3)
-    public void getSoftware() {
+    public void getSoftwareSet() {
         Software softResponse= LicenseEngine.getSoftware("replay");
         assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
         Set<String> licenseSet = new HashSet<>(Arrays.asList("LGPL-2.1", "MIT", "CC-BY-SA-3.0"));
+        assertEquals(licenseSet,softResponse.getEffectiveLicenses());
+        assertEquals("replay", softResponse.getName());
+    }
+
+    @Test
+    @Order(4)
+    public void getSoftwareAll() {
+        Software softResponse= LicenseEngine.getSoftware("replay");
+        assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
         Set<String> licenseSetAll = new HashSet<>(Arrays.asList("EPL-1.0",
                 "LGPL-2.1",
                 "CDDL-1.1",
@@ -76,14 +85,21 @@ public class TestApi {
                 "MIT",
                 "CC-BY-SA-3.0",
                 "UNKNOWN LICENSE"));
-        assertEquals(licenseSet,softResponse.getEffectiveLicenses());
         assertEquals(licenseSetAll,softResponse.getAllLicenses());
+        assertEquals("replay", softResponse.getName());
+    }
+
+    @Test
+    @Order(5)
+    public void getSoftwareFiles() {
+        Software softResponse= LicenseEngine.getSoftware("replay");
+        assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
         assertEquals("replay", softResponse.getName());
         assertEquals(550,softResponse.getFiles().intValue());
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     public void addSoftwareDataverse() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         try (InputStream is = classLoader.getResourceAsStream("dataverse.json")) {
@@ -102,7 +118,7 @@ public class TestApi {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     public void getSoftwareDataverse() {
         Software softResponse= LicenseEngine.getSoftware("dataverse");
         assertEquals("https://github.com/IQSS/dataverse.git",softResponse.getUrl());
@@ -133,6 +149,50 @@ public class TestApi {
                 "CC-BY-ND-4.0",
                 "UNKNOWN LICENSE"));
         assertEquals(licenseSet,softResponse.getEffectiveLicenses());
+        assertEquals(licenseSetAll,softResponse.getAllLicenses());
+        assertEquals("dataverse", softResponse.getName());
+    }
+
+    @Test
+    @Order(8)
+    public void getSoftwareDataverseSet() {
+        Software softResponse= LicenseEngine.getSoftware("dataverse");
+        assertEquals("https://github.com/IQSS/dataverse.git",softResponse.getUrl());
+        Set<String> licenseSet = new HashSet<>(Arrays.asList("CC-BY-NC-3.0",
+                "CC-BY-NC-4.0",
+                "CC-BY-NC-SA-4.0",
+                "CC-BY-4.0",
+                "CC-BY-3.0",
+                "GPL-2.0",
+                "JSON",
+                "CC-BY-SA-4.0",
+                "Apache-2.0",
+                "MIT",
+                "CC0-1.0",
+                "CC-BY-ND-4.0"));
+        assertEquals(licenseSet,softResponse.getEffectiveLicenses());
+        assertEquals("dataverse", softResponse.getName());
+    }
+
+    @Test
+    @Order(9)
+    public void getSoftwareDataverseAll() {
+        Software softResponse= LicenseEngine.getSoftware("dataverse");
+        assertEquals("https://github.com/IQSS/dataverse.git",softResponse.getUrl());
+        Set<String> licenseSetAll = new HashSet<>(Arrays.asList("CC-BY-NC-3.0",
+                "CC-BY-NC-4.0",
+                "CC-BY-NC-SA-4.0",
+                "CC-BY-4.0",
+                "NULL LICENSE",
+                "CC-BY-3.0",
+                "GPL-2.0",
+                "JSON",
+                "CC-BY-SA-4.0",
+                "Apache-2.0",
+                "MIT",
+                "CC0-1.0",
+                "CC-BY-ND-4.0",
+                "UNKNOWN LICENSE"));
         assertEquals(licenseSetAll,softResponse.getAllLicenses());
         assertEquals("dataverse", softResponse.getName());
     }

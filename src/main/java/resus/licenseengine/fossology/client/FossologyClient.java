@@ -164,7 +164,7 @@ public class FossologyClient {
 
 		Integer id = null;
 		try {
-			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, true,  vcsUploadWrapper.toString());
+			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, null,  vcsUploadWrapper.toString());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -193,7 +193,7 @@ public class FossologyClient {
 		Integer id = null;
 
 		try {
-			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, true, String.valueOf(urlUpload));
+			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, null, String.valueOf(urlUpload));
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -223,7 +223,7 @@ public class FossologyClient {
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = uploadApi.uploadsPost(token, "file",1, description, "public", true, true, file);
+			Info info = uploadApi.uploadsPost(token, "file",1, description, "public", true, null, file);
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
