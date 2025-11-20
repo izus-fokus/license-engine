@@ -131,7 +131,8 @@ public class TestApi {
                 "CC-BY-3.0",
                 "CC-BY-NC-ND-4.0",
                 "NOASSERTION",
-                "JSON, GPL-2.0-only",
+                "JSON",
+                "GPL-2.0-only",
                 "CC-BY-SA-4.0",
                 "Apache-2.0",
                 "CC0-1.0",
@@ -161,6 +162,7 @@ public class TestApi {
                 "CC0-1.0",
                 "MIT",
                 "CC-BY-ND-4.0",
+                "UNKNOWN LICENSE",
                 "LGPL-3.0-or-later"));
         assertEquals(licenseSetAll,softResponse.getAllLicenses());
         assertEquals("dataverse", softResponse.getName());
