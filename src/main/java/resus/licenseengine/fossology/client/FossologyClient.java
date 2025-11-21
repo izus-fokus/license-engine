@@ -38,7 +38,7 @@ import resus.licenseengine.fossology.api.JobApi;
 import resus.licenseengine.fossology.api.ReportApi;
 import resus.licenseengine.fossology.api.UploadApi;
 import resus.licenseengine.fossology.model.*;
-import resus.licenseengine.fossology.model.TokenRequest.TokenScopeEnum;
+import resus.licenseengine.fossology.model.TokenRequestParam.TokenScopeEnum;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 
@@ -114,18 +114,18 @@ public class FossologyClient {
 
 		logger.debug("Creating an authorization token for accessing fossology...");
 
-        TokenRequest tokenreq = new TokenRequest();
-		tokenreq.setPassword(username);
-		tokenreq.setUsername(password);
-		tokenreq.setToken_name(UUID.randomUUID().toString());
-		tokenreq.setToken_scope(TokenScopeEnum.WRITE);
-		tokenreq.setToken_expire(LocalDate.now().plusDays(30).toString());
+        TokenRequestParam tokenReq = new TokenRequestParam(
+                username,
+                password,
+                UUID.randomUUID().toString(),
+                TokenScopeEnum.WRITE,
+                (LocalDate.now().plusDays(30).toString()));
 
         String token = null;
         DefaultResponse response = null;
         try {
             assert defaultApi != null;
-            response = defaultApi.tokensPost(tokenreq);
+            response = defaultApi.tokensPost(tokenReq.toString());
             token = response.getAuthorization();
 
             logger.debug("Authorization token created: {}", token);
