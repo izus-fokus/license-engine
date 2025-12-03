@@ -117,7 +117,7 @@ public class LicenseEngineApplication {
 				logger.info("http://localhost:" + port + "/swagger-ui.html");
 				logger.info(
 						"(This service requires a running FOSSology instance, which can be started, e.g., as follows: docker run -p "
-								+ fossPort + ":80 fossology/fossology:3.10.0)");
+								+ fossPort + ":80 fossology/fossology)");
 				logger.info("******************************************");
                 if (LicenseEngine.isFossologyAvailable()) {
                     logger.info("Fossology is available");
