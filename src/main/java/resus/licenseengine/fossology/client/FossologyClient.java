@@ -38,7 +38,7 @@ import resus.licenseengine.fossology.api.JobApi;
 import resus.licenseengine.fossology.api.ReportApi;
 import resus.licenseengine.fossology.api.UploadApi;
 import resus.licenseengine.fossology.model.*;
-import resus.licenseengine.fossology.model.TokenRequestParam.TokenScopeEnum;
+import resus.licenseengine.fossology.model.TokenRequestParamBody.TokenScopeEnum;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 
@@ -114,7 +114,7 @@ public class FossologyClient {
 
 		logger.debug("Creating an authorization token for accessing fossology...");
 
-        TokenRequestParam tokenReq = new TokenRequestParam(
+        TokenRequestParamBody tokenReq = new TokenRequestParamBody(
                 username,
                 password,
                 UUID.randomUUID().toString(),

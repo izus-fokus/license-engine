@@ -1,15 +1,16 @@
 package resus.licenseengine.fossology.model;
 
-public class TokenRequestParam {
+public class TokenRequestParamBody {
 
-    public TokenRequestParam() {}
+    public TokenRequestParamBody() {
+    }
 
-    public TokenRequestParam(String username, String password, String token_name, TokenScopeEnum token_scope, String token_expire) {
+    public TokenRequestParamBody(String username, String password, String tokenName, TokenScopeEnum tokenScope, String tokenExpire) {
         this.username = username;
         this.password = password;
-        this.tokenName = token_name;
-        this.tokenExpire = token_expire;
-        this.tokenScope = token_scope;
+        this.tokenName = tokenName;
+        this.tokenExpire = tokenExpire;
+        this.tokenScope = tokenScope;
     }
 
     /**
@@ -79,11 +80,6 @@ public class TokenRequestParam {
         this.username = username;
     }
 
-    public TokenRequestParam username(String username) {
-        this.username = username;
-        return this;
-    }
-
     /**
      * Password of the user trying to login.
      *
@@ -97,11 +93,6 @@ public class TokenRequestParam {
         this.password = password;
     }
 
-    public TokenRequestParam password(String password) {
-        this.password = password;
-        return this;
-    }
-
     /**
      * Friendly name of the token
      *
@@ -113,11 +104,6 @@ public class TokenRequestParam {
 
     public void setTokenName(String tokenName) {
         this.tokenName = tokenName;
-    }
-
-    public TokenRequestParam tokenName(String tokenName) {
-        this.tokenName = tokenName;
-        return this;
     }
 
     /**
@@ -136,11 +122,6 @@ public class TokenRequestParam {
         this.tokenScope = tokenScope;
     }
 
-    public TokenRequestParam tokenScope(TokenScopeEnum tokenScope) {
-        this.tokenScope = tokenScope;
-        return this;
-    }
-
     /**
      * Date when the token must expire (default max 30 days).
      *
@@ -154,16 +135,11 @@ public class TokenRequestParam {
         this.tokenExpire = tokenExpire;
     }
 
-    public TokenRequestParam tokenExpire(String tokenExpire) {
-        this.tokenExpire = tokenExpire;
-        return this;
-    }
-
 
     @Override
     public String toString() {
 
-        return  "username=" + this.username + "&" +
+        return "username=" + this.username + "&" +
                 "password=" + this.password + "&" +
                 "tokenName=" + this.tokenName + "&" +
                 "tokenScope=" + this.tokenScope + "&" +

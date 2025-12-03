@@ -25,7 +25,7 @@ public class VcsUploadWrapper implements OneOfbody {
         this.location = location;
     }
 
-    @Schema(required = true, description = "VCS location")
+    @Schema(description = "VCS location")
     /**
      * VCS location
      **/

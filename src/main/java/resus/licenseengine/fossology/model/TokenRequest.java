@@ -19,28 +19,19 @@ public class TokenRequest {
     }
 
     @Schema(description = "Username of the login user.")
-    /**
-     * Username of the login user.
-     **/
     private String username = null;
 
     @Schema(description = "Password of the user trying to login.")
-    /**
-     * Password of the user trying to login.
-     **/
     private String password = null;
 
     @Schema(description = "Friendly name of the token")
-    /**
-     * Friendly name of the token
-     **/
     private String token_name = null;
 
     public enum TokenScopeEnum {
         READ("read"),
         WRITE("write");
 
-        private String value;
+        private final String value;
 
         TokenScopeEnum(String value) {
             this.value = value;
@@ -68,15 +59,9 @@ public class TokenRequest {
     }
 
     @Schema(description = "The scope of the token.")
-    /**
-     * The scope of the token.
-     **/
     private TokenScopeEnum token_scope = null;
 
     @Schema(description = "Date when the token must expire (default max 30 days).")
-    /**
-     * Date when the token must expire (default max 30 days).
-     **/
     private String token_expire = null;
 
     /**
