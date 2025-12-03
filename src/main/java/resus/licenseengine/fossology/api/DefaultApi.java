@@ -89,14 +89,16 @@ public interface DefaultApi {
      */
     @POST
     @Path("/tokens")
-    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Generate a new token", tags = {})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Token generated", content = @Content(schema = @Schema(implementation = DefaultResponse.class))),
             @ApiResponse(responseCode = "404", description = "UserName or password incorrect", content = @Content(schema = @Schema(implementation = Info.class))),
             @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class)))})
-    public DefaultResponse tokensPost(String paramBody);
+    public DefaultResponse tokensPost(
+            String paramBody
+    );
 
 
     /**

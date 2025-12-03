@@ -31,8 +31,7 @@ public class VcsUploadWrapper implements OneOfbody {
      **/
     private HashMap<String,VcsUpload> location = null;
 
-    @Override
-    public String toString() {
+    public String toJsonObject() {
 
         // https://stackoverflow.com/questions/15786129/converting-java-objects-to-json-with-jackson
 

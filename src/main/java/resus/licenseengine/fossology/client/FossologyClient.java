@@ -125,7 +125,7 @@ public class FossologyClient {
         DefaultResponse response = null;
         try {
             assert defaultApi != null;
-            response = defaultApi.tokensPost(tokenReq.toString());
+            response = defaultApi.tokensPost(tokenReq.toJsonObject());
             token = response.getAuthorization();
 
             logger.debug("Authorization token created: {}", token);
@@ -158,13 +158,21 @@ public class FossologyClient {
 		vcsUpload.setVcsType(VcsUpload.VcsTypeEnum.GIT);
 		vcsUpload.setVcsUrl(vcsUrl);
 
-        VcsUploadWrapper vcsUploadWrapper = new VcsUploadWrapper(vcsUpload);
+        UploadRequestParamBody paramBody = new UploadRequestParamBody();
+        paramBody.setUploadType("vcs");
+        paramBody.setFolderId(1);
+        paramBody.setUploadDescription(description);
+        paramBody.set_public("public");
+        paramBody.setIgnoreScm(true);
+        paramBody.setGroupName(null);
+        paramBody.setLocation(vcsUpload);
+
 
 		logger.debug("Uploading software...: {} from: {}.", description, vcsUrl);
 
 		Integer id = null;
 		try {
-			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, null,  vcsUploadWrapper.toString());
+			Info info = uploadApi.uploadsPost(token, paramBody.toJsonObject());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -192,8 +200,17 @@ public class FossologyClient {
 
 		Integer id = null;
 
+        UploadRequestParamBody paramBody = new UploadRequestParamBody();
+        paramBody.setUploadType("vcs");
+        paramBody.setFolderId(1);
+        paramBody.setUploadDescription(description);
+        paramBody.set_public("public");
+        paramBody.setIgnoreScm(true);
+        paramBody.setGroupName(null);
+        paramBody.setLocation(urlUpload);
+
 		try {
-			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, null, String.valueOf(urlUpload));
+			Info info = uploadApi.uploadsPost(token, paramBody.toJsonObject());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {

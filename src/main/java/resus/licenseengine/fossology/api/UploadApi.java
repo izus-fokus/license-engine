@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.web.bind.annotation.RequestBody;
 import resus.licenseengine.fossology.model.Info;
 import resus.licenseengine.fossology.model.OneOfbody;
 import resus.licenseengine.fossology.model.Upload;
@@ -146,20 +147,14 @@ public interface UploadApi {
 	 */
 	@POST
 	@Path("/uploads")
-	@Consumes({MediaType.APPLICATION_JSON, MediaType.MULTIPART_FORM_DATA })
+	@Consumes({MediaType.APPLICATION_JSON })
 	@Produces({MediaType.APPLICATION_JSON})
 	@Operation(summary = "Post new upload to FOSSology", tags = {})
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Upload is created", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
 	public Info uploadsPost(@HeaderParam("Authorization") String authorization,
-                            @HeaderParam("uploadType") String uploadType,
-                            @HeaderParam("folderId") Integer folderId,
-                            @HeaderParam("uploadDescription") String uploadDescription,
-                            @HeaderParam("public") String _public,
-                            @HeaderParam("ignoreScm") Boolean ignoreScm,
-                            @HeaderParam("groupName") String groupName,
-                            String body);
+                            String bodyParam);
 
 	/**
 	 * Post new upload to FOSSology

@@ -1,5 +1,8 @@
 package resus.licenseengine.fossology.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class TokenRequestParamBody {
 
     public TokenRequestParamBody() {
@@ -139,11 +142,38 @@ public class TokenRequestParamBody {
     @Override
     public String toString() {
 
-        return "username=" + this.username + "&" +
-                "password=" + this.password + "&" +
-                "tokenName=" + this.tokenName + "&" +
-                "tokenScope=" + this.tokenScope + "&" +
-                "tokenExpire=" + this.tokenExpire;
+        return "class TokenRequest {\n" +
+                "    username: " + toIndentedString(username) + "\n" +
+                "    password: " + toIndentedString(password) + "\n" +
+                "    tokenName: " + toIndentedString(tokenName) + "\n" +
+                "    tokenScope: " + toIndentedString(tokenScope) + "\n" +
+                "    tokenExpire: " + toIndentedString(tokenExpire) + "\n" +
+                "}";
     }
 
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private static String toIndentedString(java.lang.Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+
+
+    public String toJsonObject() {
+
+        // https://stackoverflow.com/questions/15786129/converting-java-objects-to-json-with-jackson
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            // convert location object to json string and return it
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
