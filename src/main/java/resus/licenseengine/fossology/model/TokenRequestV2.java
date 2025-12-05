@@ -142,7 +142,7 @@ public class TokenRequestV2 {
     @Override
     public String toString() {
 
-        return "class TokenRequest {\n" +
+        return "class TokenRequestV2 {\n" +
                 "    username: " + toIndentedString(username) + "\n" +
                 "    password: " + toIndentedString(password) + "\n" +
                 "    tokenName: " + toIndentedString(tokenName) + "\n" +

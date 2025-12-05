@@ -115,7 +115,7 @@ public class UploadRequest implements OneOfbody{
     @Override
     public String toString() {
 
-        return "class UploadRequestParamBody {\n" +
+        return "class UploadRequest {\n" +
                 "    uploadType: " + toIndentedString(uploadType) + "\n" +
                 "    folderId: " + toIndentedString(folderId) + "\n" +
                 "    uploadDescription: " + toIndentedString(uploadDescription) + "\n" +
