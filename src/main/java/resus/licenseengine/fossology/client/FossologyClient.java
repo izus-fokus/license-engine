@@ -201,7 +201,7 @@ public class FossologyClient {
 		Integer id = null;
 
         UploadRequest uploadRequest = new UploadRequest();
-        uploadRequest.setUploadType("vcs");
+        uploadRequest.setUploadType("url");
         uploadRequest.setFolderId(1);
         uploadRequest.setUploadDescription(description);
         uploadRequest.set_public("public");
@@ -230,8 +230,13 @@ public class FossologyClient {
 	 */
 	public Integer uploadFile(Attachment file, String description) {
 
-		Upload Upload = new Upload();
-		Upload.setDescription(description);
+        UploadRequest uploadRequest = new UploadRequest();
+        uploadRequest.setUploadType("file");
+        uploadRequest.setFolderId(1);
+        uploadRequest.setUploadDescription(description);
+        uploadRequest.set_public("public");
+        uploadRequest.setIgnoreScm(true);
+        uploadRequest.setGroupName(null);
 
 		logger.debug("Uploading software...: {} from file with : {}.", description, file.hashCode());
 		logger.debug("File Content-Type: {} Content-ID: {}", file.getContentType(), file.getContentId());
@@ -240,7 +245,7 @@ public class FossologyClient {
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = uploadApi.uploadsPost(token, "file",1, description, "public", true, null, file);
+			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject(), file);
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
