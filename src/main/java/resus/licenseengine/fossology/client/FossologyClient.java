@@ -38,7 +38,7 @@ import resus.licenseengine.fossology.api.JobApi;
 import resus.licenseengine.fossology.api.ReportApi;
 import resus.licenseengine.fossology.api.UploadApi;
 import resus.licenseengine.fossology.model.*;
-import resus.licenseengine.fossology.model.TokenRequestParamBody.TokenScopeEnum;
+import resus.licenseengine.fossology.model.TokenRequestV2.TokenScopeEnum;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 
@@ -114,7 +114,7 @@ public class FossologyClient {
 
 		logger.debug("Creating an authorization token for accessing fossology...");
 
-        TokenRequestParamBody tokenReq = new TokenRequestParamBody(
+        TokenRequestV2 tokenReq = new TokenRequestV2(
                 username,
                 password,
                 UUID.randomUUID().toString(),
@@ -158,21 +158,21 @@ public class FossologyClient {
 		vcsUpload.setVcsType(VcsUpload.VcsTypeEnum.GIT);
 		vcsUpload.setVcsUrl(vcsUrl);
 
-        UploadRequestParamBody paramBody = new UploadRequestParamBody();
-        paramBody.setUploadType("vcs");
-        paramBody.setFolderId(1);
-        paramBody.setUploadDescription(description);
-        paramBody.set_public("public");
-        paramBody.setIgnoreScm(true);
-        paramBody.setGroupName(null);
-        paramBody.setLocation(vcsUpload);
+        UploadRequest uploadRequest = new UploadRequest();
+        uploadRequest.setUploadType("vcs");
+        uploadRequest.setFolderId(1);
+        uploadRequest.setUploadDescription(description);
+        uploadRequest.set_public("public");
+        uploadRequest.setIgnoreScm(true);
+        uploadRequest.setGroupName(null);
+        uploadRequest.setLocation(vcsUpload);
 
 
 		logger.debug("Uploading software...: {} from: {}.", description, vcsUrl);
 
 		Integer id = null;
 		try {
-			Info info = uploadApi.uploadsPost(token, paramBody.toJsonObject());
+			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -200,17 +200,17 @@ public class FossologyClient {
 
 		Integer id = null;
 
-        UploadRequestParamBody paramBody = new UploadRequestParamBody();
-        paramBody.setUploadType("vcs");
-        paramBody.setFolderId(1);
-        paramBody.setUploadDescription(description);
-        paramBody.set_public("public");
-        paramBody.setIgnoreScm(true);
-        paramBody.setGroupName(null);
-        paramBody.setLocation(urlUpload);
+        UploadRequest uploadRequest = new UploadRequest();
+        uploadRequest.setUploadType("vcs");
+        uploadRequest.setFolderId(1);
+        uploadRequest.setUploadDescription(description);
+        uploadRequest.set_public("public");
+        uploadRequest.setIgnoreScm(true);
+        uploadRequest.setGroupName(null);
+        uploadRequest.setLocation(urlUpload);
 
 		try {
-			Info info = uploadApi.uploadsPost(token, paramBody.toJsonObject());
+			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {

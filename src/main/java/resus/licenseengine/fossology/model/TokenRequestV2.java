@@ -3,12 +3,12 @@ package resus.licenseengine.fossology.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class TokenRequestParamBody {
+public class TokenRequestV2 {
 
-    public TokenRequestParamBody() {
+    public TokenRequestV2() {
     }
 
-    public TokenRequestParamBody(String username, String password, String tokenName, TokenScopeEnum tokenScope, String tokenExpire) {
+    public TokenRequestV2(String username, String password, String tokenName, TokenScopeEnum tokenScope, String tokenExpire) {
         this.username = username;
         this.password = password;
         this.tokenName = tokenName;

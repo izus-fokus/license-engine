@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class UploadRequestParamBody implements OneOfbody{
+public class UploadRequest implements OneOfbody{
 
-    public UploadRequestParamBody() {
+    public UploadRequest() {
     }
 
-    public UploadRequestParamBody(String uploadType, Integer folderId, String uploadDescription,
-                                  String _public, Boolean ignoreScm, String groupName, OneOfbody location) {
+    public UploadRequest(String uploadType, Integer folderId, String uploadDescription,
+                         String _public, Boolean ignoreScm, String groupName, OneOfbody location) {
         this.uploadType = uploadType;
         this.folderId = folderId;
         this.uploadDescription = uploadDescription;
