@@ -286,7 +286,7 @@ public class FossologyClient {
 		scanOptions.setAnalysis(analysisConfig);
 		scanOptions.setDecider(deciderConfig);
 
-		Info info = jobApi.jobsPost(token, 1, uploadID, null, scanOptions);
+		Info info = jobApi.jobsPost(token, 1, uploadID, scanOptions.toJsonObject());
 		Integer id = Integer.parseInt(info.getMessage());
 
 		logger.debug("Starting analyzing the uploaded software with ID: {}. AnalyzeJobID: {}", uploadID, id);

@@ -1,5 +1,7 @@
 package resus.licenseengine.fossology.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -79,4 +81,19 @@ public class ServerUpload  implements OneOfbody  {
     }
     return o.toString().replace("\n", "\n    ");
   }
+
+    @Override
+    public String toJsonObject() {
+
+        // https://stackoverflow.com/questions/15786129/converting-java-objects-to-json-with-jackson
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            // convert location object to json string and return it
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

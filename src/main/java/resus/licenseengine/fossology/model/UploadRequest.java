@@ -10,7 +10,8 @@ public class UploadRequest implements OneOfbody{
     }
 
     public UploadRequest(String uploadType, Integer folderId, String uploadDescription,
-                         String _public, Boolean ignoreScm, String groupName, OneOfbody location) {
+                         String _public, Boolean ignoreScm, String groupName,
+                         Integer uploadId, OneOfbody location) {
         this.uploadType = uploadType;
         this.folderId = folderId;
         this.uploadDescription = uploadDescription;
@@ -28,7 +29,7 @@ public class UploadRequest implements OneOfbody{
     /**
      * folderId
      **/
-    private int folderId = 0;
+    private Integer folderId = 0;
 
     /**
      * uploadDescription
@@ -66,7 +67,7 @@ public class UploadRequest implements OneOfbody{
         this.uploadType = uploadType;
     }
 
-    public int getFolderId() {
+    public Integer getFolderId() {
         return folderId;
     }
 
@@ -101,7 +102,6 @@ public class UploadRequest implements OneOfbody{
         this.ignoreScm = ignoreScm;
     }
 
-
     public OneOfbody getLocation() {
         return location;
     }
@@ -122,6 +122,7 @@ public class UploadRequest implements OneOfbody{
                 "    public: " + toIndentedString(_public) + "\n" +
                 "    ignoreScm: " + toIndentedString(ignoreScm) + "\n" +
                 "    groupName: " + toIndentedString(groupName) + "\n" +
+                "    location: " + toIndentedString(location) + "\n" +
                 "}";
     }
 
@@ -150,5 +151,4 @@ public class UploadRequest implements OneOfbody{
             throw new RuntimeException(e);
         }
     }
-
 }

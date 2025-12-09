@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  **/
 @Schema(description = "To create an upload from a version control system")
 public class VcsUpload implements OneOfbody {
+
     public enum VcsTypeEnum {
         SVN("svn"),
         GIT("git");
@@ -204,6 +205,7 @@ public class VcsUpload implements OneOfbody {
         return o.toString().replace("\n", "\n    ");
     }
 
+    @Override
     public String toJsonObject() {
 
         // https://stackoverflow.com/questions/15786129/converting-java-objects-to-json-with-jackson
