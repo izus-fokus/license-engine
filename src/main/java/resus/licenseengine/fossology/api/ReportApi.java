@@ -2,11 +2,7 @@ package resus.licenseengine.fossology.api;
 
 import java.io.File;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,8 +32,9 @@ public interface ReportApi {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Report generation is scheduled. Link to download report will be in message", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-	public Info reportGet(@HeaderParam("Authorization") String authorization, @HeaderParam("uploadId") Integer uploadId,
-			@HeaderParam("reportFormat") String reportFormat, @HeaderParam("groupName") String groupName);
+	public Info reportGet(@HeaderParam("Authorization") String authorization,
+                          @QueryParam("uploadId") Integer uploadId,
+                          @QueryParam("reportFormat") String reportFormat);
 
 	/**
 	 * Download the report
@@ -51,6 +48,6 @@ public interface ReportApi {
 			@ApiResponse(responseCode = "200", description = "Required report", content = @Content(schema = @Schema(implementation = File.class))),
 			@ApiResponse(responseCode = "503", description = "Report is not ready yet. Check 'Retry-After' header.", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-	public File reportIdGet(@HeaderParam("Authorization") String authorization, @PathParam("id") Integer id,
-			@HeaderParam("groupName") String groupName);
+	public File reportIdGet(@HeaderParam("Authorization") String authorization,
+                            @PathParam("id") Integer id);
 }

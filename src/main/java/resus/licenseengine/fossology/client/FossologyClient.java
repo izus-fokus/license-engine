@@ -384,7 +384,7 @@ public class FossologyClient {
 	 */
 	public Integer createReport(Integer uploadID) {
 
-		Info info = reportApi.reportGet(token, uploadID, "spdx2", null);
+		Info info = reportApi.reportGet(token, uploadID, "spdx2");
 		String infoMessage = info.getMessage();
 		Integer id = Integer.parseInt(infoMessage.substring(infoMessage.lastIndexOf("/") + 1));
 
@@ -402,7 +402,7 @@ public class FossologyClient {
 	public File getReport(Integer reportID) {
 
 		logger.debug("Getting the report with ID: uploadID", reportID);
-		return reportApi.reportIdGet(token, reportID, null);
+		return reportApi.reportIdGet(token, reportID);
 
 	}
 
