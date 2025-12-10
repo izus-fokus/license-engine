@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>resus</groupId>
 	<artifactId>licenseengine</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>ReSUS License-Engine</name>
 	<description>License-Engine for ReSUS project.</description>
 
