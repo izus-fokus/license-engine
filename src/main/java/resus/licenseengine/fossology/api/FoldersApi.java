@@ -2,15 +2,7 @@ package resus.licenseengine.fossology.api;
 
 import java.util.List;
 
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -80,7 +72,9 @@ public interface FoldersApi  {
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "Folder is updated", content = @Content(schema = @Schema(implementation = Info.class))),
         @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-    public Info foldersIdPatch(@PathParam("id") Integer id, @HeaderParam("name") String name, @HeaderParam("description") String description);
+    public Info foldersIdPatch(@PathParam("id") Integer id,
+                               @QueryParam("name") String name,
+                               @QueryParam("description") String description);
 
     /**
      * Copy/Move a folder
@@ -93,7 +87,9 @@ public interface FoldersApi  {
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "202", description = "Folder will be copied/moved", content = @Content(schema = @Schema(implementation = Info.class))),
         @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-    public Info foldersIdPut(@PathParam("id") Integer id, @HeaderParam("parent") Integer parent, @HeaderParam("action") String action);
+    public Info foldersIdPut(@PathParam("id") Integer id,
+                             @QueryParam("parent") Integer parent,
+                             @QueryParam("action") String action);
 
     /**
      * Create a new folder
@@ -107,5 +103,7 @@ public interface FoldersApi  {
         @ApiResponse(responseCode = "200", description = "Folder with the same name already exists under the same parent", content = @Content(schema = @Schema(implementation = Info.class))),
         @ApiResponse(responseCode = "201", description = "Folder is created with new folder id in message", content = @Content(schema = @Schema(implementation = Info.class))),
         @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-    public Info foldersPost(@HeaderParam("parentFolder") Integer parentFolder, @HeaderParam("folderName") String folderName, @HeaderParam("folderDescription") String folderDescription);
+    public Info foldersPost(@HeaderParam("parentFolder") Integer parentFolder,
+                            @QueryParam("folderName") String folderName,
+                            @QueryParam("folderDescription") String folderDescription);
 }

@@ -2,10 +2,7 @@ package resus.licenseengine.fossology.api;
 
 import java.util.List;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,5 +29,12 @@ public interface SearchApi  {
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SearchResults.class)))),
         @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-    public List<SearchResults> searchGet(@HeaderParam("groupName") String groupName, @HeaderParam("searchType") String searchType, @HeaderParam("filename") String filename, @HeaderParam("tag") String tag, @HeaderParam("filesizemin") Integer filesizemin, @HeaderParam("filesizemax") Integer filesizemax, @HeaderParam("license") String license, @HeaderParam("copyright") String copyright);
+    public List<SearchResults> searchGet(@QueryParam("groupName") String groupName,
+                                         @QueryParam("searchType") String searchType,
+                                         @QueryParam("filename") String filename,
+                                         @QueryParam("tag") String tag,
+                                         @QueryParam("filesizemin") Integer filesizemin,
+                                         @QueryParam("filesizemax") Integer filesizemax,
+                                         @QueryParam("license") String license,
+                                         @QueryParam("copyright") String copyright);
 }
