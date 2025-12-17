@@ -82,6 +82,26 @@ public interface DefaultApi {
     public DefaultResponse tokensPost(@Multipart(value = "username") String username, @Multipart(value = "password") String password, @Multipart(value = "token_name") String tokenName, @Multipart(value = "token_scope") String tokenScope, @Multipart(value = "token_expire") LocalDate tokenExpire);
 
     /**
+     * Generate a new token
+     * <p>
+     * Generate a new token to access REST API
+     *
+     */
+    @POST
+    @Path("/tokens")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Generate a new token", tags = {})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Token generated", content = @Content(schema = @Schema(implementation = DefaultResponse.class))),
+            @ApiResponse(responseCode = "404", description = "UserName or password incorrect", content = @Content(schema = @Schema(implementation = Info.class))),
+            @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class)))})
+    public DefaultResponse tokensPost(
+            String paramBody
+    );
+
+
+    /**
      * Get the current API information
      * <p>
      * Get the current API version and supported authentication methods

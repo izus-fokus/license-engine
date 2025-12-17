@@ -38,7 +38,7 @@ import resus.licenseengine.fossology.api.JobApi;
 import resus.licenseengine.fossology.api.ReportApi;
 import resus.licenseengine.fossology.api.UploadApi;
 import resus.licenseengine.fossology.model.*;
-import resus.licenseengine.fossology.model.TokenRequest.TokenScopeEnum;
+import resus.licenseengine.fossology.model.TokenRequestV2.TokenScopeEnum;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 
@@ -114,18 +114,18 @@ public class FossologyClient {
 
 		logger.debug("Creating an authorization token for accessing fossology...");
 
-        TokenRequest tokenreq = new TokenRequest();
-		tokenreq.setPassword(username);
-		tokenreq.setUsername(password);
-		tokenreq.setToken_name(UUID.randomUUID().toString());
-		tokenreq.setToken_scope(TokenScopeEnum.WRITE);
-		tokenreq.setToken_expire(LocalDate.now().plusDays(30).toString());
+        TokenRequestV2 tokenReq = new TokenRequestV2(
+                username,
+                password,
+                UUID.randomUUID().toString(),
+                TokenScopeEnum.WRITE,
+                (LocalDate.now().plusDays(30).toString()));
 
         String token = null;
         DefaultResponse response = null;
         try {
             assert defaultApi != null;
-            response = defaultApi.tokensPost(tokenreq);
+            response = defaultApi.tokensPost(tokenReq.toJsonObject());
             token = response.getAuthorization();
 
             logger.debug("Authorization token created: {}", token);
@@ -158,13 +158,21 @@ public class FossologyClient {
 		vcsUpload.setVcsType(VcsUpload.VcsTypeEnum.GIT);
 		vcsUpload.setVcsUrl(vcsUrl);
 
-        VcsUploadWrapper vcsUploadWrapper = new VcsUploadWrapper(vcsUpload);
+        UploadRequest uploadRequest = new UploadRequest();
+        uploadRequest.setUploadType("vcs");
+        uploadRequest.setFolderId(1);
+        uploadRequest.setUploadDescription(description);
+        uploadRequest.set_public("public");
+        uploadRequest.setIgnoreScm(true);
+        uploadRequest.setGroupName(null);
+        uploadRequest.setLocation(vcsUpload);
+
 
 		logger.debug("Uploading software...: {} from: {}.", description, vcsUrl);
 
 		Integer id = null;
 		try {
-			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, null,  vcsUploadWrapper.toString());
+			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -192,8 +200,17 @@ public class FossologyClient {
 
 		Integer id = null;
 
+        UploadRequest uploadRequest = new UploadRequest();
+        uploadRequest.setUploadType("url");
+        uploadRequest.setFolderId(1);
+        uploadRequest.setUploadDescription(description);
+        uploadRequest.set_public("public");
+        uploadRequest.setIgnoreScm(true);
+        uploadRequest.setGroupName(null);
+        uploadRequest.setLocation(urlUpload);
+
 		try {
-			Info info = uploadApi.uploadsPost(token, "vcs", 1, description, "public", true, null, String.valueOf(urlUpload));
+			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject());
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -213,8 +230,13 @@ public class FossologyClient {
 	 */
 	public Integer uploadFile(Attachment file, String description) {
 
-		Upload Upload = new Upload();
-		Upload.setDescription(description);
+        UploadRequest uploadRequest = new UploadRequest();
+        uploadRequest.setUploadType("file");
+        uploadRequest.setFolderId(1);
+        uploadRequest.setUploadDescription(description);
+        uploadRequest.set_public("public");
+        uploadRequest.setIgnoreScm(true);
+        uploadRequest.setGroupName(null);
 
 		logger.debug("Uploading software...: {} from file with : {}.", description, file.hashCode());
 		logger.debug("File Content-Type: {} Content-ID: {}", file.getContentType(), file.getContentId());
@@ -223,7 +245,7 @@ public class FossologyClient {
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = uploadApi.uploadsPost(token, "file",1, description, "public", true, null, file);
+			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject(), file);
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
@@ -264,7 +286,7 @@ public class FossologyClient {
 		scanOptions.setAnalysis(analysisConfig);
 		scanOptions.setDecider(deciderConfig);
 
-		Info info = jobApi.jobsPost(token, 1, uploadID, null, scanOptions);
+		Info info = jobApi.jobsPost(token, 1, uploadID, scanOptions.toJsonObject());
 		Integer id = Integer.parseInt(info.getMessage());
 
 		logger.debug("Starting analyzing the uploaded software with ID: {}. AnalyzeJobID: {}", uploadID, id);
@@ -362,7 +384,7 @@ public class FossologyClient {
 	 */
 	public Integer createReport(Integer uploadID) {
 
-		Info info = reportApi.reportGet(token, uploadID, "spdx2", null);
+		Info info = reportApi.reportGet(token, uploadID, "spdx2");
 		String infoMessage = info.getMessage();
 		Integer id = Integer.parseInt(infoMessage.substring(infoMessage.lastIndexOf("/") + 1));
 
@@ -380,7 +402,7 @@ public class FossologyClient {
 	public File getReport(Integer reportID) {
 
 		logger.debug("Getting the report with ID: uploadID", reportID);
-		return reportApi.reportIdGet(token, reportID, null);
+		return reportApi.reportIdGet(token, reportID);
 
 	}
 

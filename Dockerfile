@@ -10,4 +10,4 @@ FROM maven:3.9.11-amazoncorretto-17-debian-trixie
 WORKDIR /licenseengine
 COPY --from=builder /licenseengine /licenseengine
 
-ENTRYPOINT  ["java","-jar","target/licenseengine-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT  ["java","-jar","target/licenseengine-0.0.2-SNAPSHOT.jar"]

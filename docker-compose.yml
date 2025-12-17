@@ -1,7 +1,7 @@
 version: '3'
 services:
     license-engine:
-        image: license-engine:0.0.1
+        image: license-engine:0.0.2
         container_name: license-engine
         build: .
         depends_on:
@@ -15,13 +15,13 @@ services:
             - FOSSOLOGY_ENDPOINT_BASE_PATH=http://fossology:80
     fossology:
         container_name: fossologydev
-        image: fossology/fossology:4.5.1
+        image: fossology/fossology:4.6.0
         ports:
             - "127.0.0.1:7100:80"
         networks:
             - resus
         healthcheck:
-            test: ["CMD-SHELL", "curl http://localhost/repo/api/v1/version"]
+            test: ["CMD-SHELL", "curl http://localhost/repo/api/v2/info"]
             interval: 10s
             start_period: 2s
             timeout: 3s

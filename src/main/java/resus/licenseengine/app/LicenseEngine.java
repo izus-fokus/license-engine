@@ -57,7 +57,7 @@ public class LicenseEngine {
 	private static String licenseRecommenderEndpoint;
 	private static LicenseRecommenderClient licenseRecommenderClient = null;
 
-	private static Map<String, Software> softwareMap = new HashMap<String, Software>();
+	private static final Map<String, Software> softwareMap = new HashMap<>();
 
 	/**
 	 * @param fossologyEndpoint

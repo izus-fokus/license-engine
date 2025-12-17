@@ -3,6 +3,12 @@ package resus.licenseengine.fossology.api;
 import java.io.File;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -11,13 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 import resus.licenseengine.fossology.model.Info;
 import resus.licenseengine.fossology.model.Job;
 import resus.licenseengine.fossology.model.ScanOptions;
@@ -71,14 +71,16 @@ public interface JobApi {
 	 */
 	@POST
 	@Path("/jobs")
-	@Consumes({ "application/json" })
-	@Produces({ "application/json" })
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
 	@Operation(summary = "Schedule an Analysis", tags = {})
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Job Scheduled with job id in message", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-	public Info jobsPost(@HeaderParam("Authorization") String authorization, @HeaderParam("folderId") Integer folderId,
-			@HeaderParam("uploadId") Integer uploadId, @HeaderParam("groupName") String groupName, ScanOptions body);
+	public Info jobsPost(@HeaderParam("Authorization") String authorization,
+                         @QueryParam("folderId") Integer folderId,
+                         @QueryParam("uploadId") Integer uploadId,
+                         String paramBody);
 
 	/**
 	 * Get the reports for a given upload

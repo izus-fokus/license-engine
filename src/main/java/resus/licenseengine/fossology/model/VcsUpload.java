@@ -1,5 +1,7 @@
 package resus.licenseengine.fossology.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,11 +13,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  **/
 @Schema(description = "To create an upload from a version control system")
 public class VcsUpload implements OneOfbody {
+
     public enum VcsTypeEnum {
         SVN("svn"),
         GIT("git");
 
-        private String value;
+        private final String value;
 
         VcsTypeEnum(String value) {
             this.value = value;
@@ -42,40 +45,22 @@ public class VcsUpload implements OneOfbody {
         }
     }
 
-    @Schema(required = true, description = "VCS type")
-    /**
-     * VCS type
-     **/
+    @Schema(description = "VCS type")
     private VcsTypeEnum vcsType = null;
 
-    @Schema(required = true, description = "URL of the repository")
-    /**
-     * URL of the repository
-     **/
+    @Schema(description = "URL of the repository")
     private String vcsUrl = null;
 
     @Schema(description = "Branch to checkout for analysis (for Git only)")
-    /**
-     * Branch to checkout for analysis (for Git only)
-     **/
     private String vcsBranch = null;
 
     @Schema(description = "Display name of the upload")
-    /**
-     * Display name of the upload
-     **/
     private String vcsName = null;
 
     @Schema(description = "Username for the VCS")
-    /**
-     * Username for the VCS
-     **/
     private String vcsUsername = null;
 
     @Schema(description = "Password for the VCS")
-    /**
-     * Password for the VCS
-     **/
     private String vcsPassword = null;
 
     /**
@@ -218,5 +203,20 @@ public class VcsUpload implements OneOfbody {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
+    }
+
+    @Override
+    public String toJsonObject() {
+
+        // https://stackoverflow.com/questions/15786129/converting-java-objects-to-json-with-jackson
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            // convert location object to json string and return it
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
