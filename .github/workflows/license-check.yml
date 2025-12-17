@@ -3,9 +3,9 @@ name: License Check
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "new_rdflib_spdx" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "new_rdflib_spdx" ]
   
 jobs:
   License-Check:
