@@ -1,11 +1,11 @@
-FROM maven:3-amazoncorretto-17-debian-trixie AS builder
+FROM docker.io/maven:3-amazoncorretto-17-debian-trixie AS builder
 
 WORKDIR /licenseengine
 COPY . /licenseengine
 
 RUN mvn clean package -DskipTests   
     
-FROM maven:3-amazoncorretto-17-debian-trixie
+FROM docker.io/maven:3-amazoncorretto-17-debian-trixie
 
 WORKDIR /licenseengine
 COPY --from=builder /licenseengine /licenseengine
