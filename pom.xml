@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.8</version>
+		<version>3.5.10</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>resus</groupId>
@@ -19,7 +19,7 @@
 		<java.version>17</java.version>
 		<spdx.version>2.2.8</spdx.version>
 		<cxf.version>4.1.4</cxf.version>
-		<springdoc.version>2.8.14</springdoc.version>
+		<springdoc.version>2.8.15</springdoc.version>
 		<openapitools.version>5.2.0</openapitools.version>
         <jacksonjakarta.version>3.0.4</jacksonjakarta.version>
 	</properties>
