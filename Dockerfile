@@ -3,12 +3,14 @@ FROM docker.io/maven:3.9-eclipse-temurin-17-noble AS builder
 ARG REPO_ACCESS_TOKEN
 ARG GIT_USER
 
+SHELL ["/bin/bash", "-c"]
+
 WORKDIR /licenseengine
 COPY . /licenseengine
 
-RUN git clone --single-branch --branch "magicfix" "https://$GIT_USER:$REPO_ACCESS_TOKEN@github.tik.uni-stuttgart.de/ac143675/Spdx-Java-Library.git"
+RUN git clone "https://$GIT_USER:$REPO_ACCESS_TOKEN@github.com/ffritze/Spdx-Java-Library-Rdf.git"
 
-RUN cd Spdx-Java-Library && mvn clean install -DskipTests
+RUN cd Spdx-Java-Library-Rdf && mvn clean install -DskipTests
 
 RUN cd /licenseengine
 
