@@ -30,10 +30,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spdx.html.InvalidLicenseTemplateException;
 import org.spdx.rdfparser.InvalidSPDXAnalysisException;
 import org.spdx.rdfparser.SPDXDocumentFactory;
 import org.spdx.rdfparser.license.AnyLicenseInfo;
+import org.spdx.rdfparser.license.InvalidLicenseTemplateException;
 import org.spdx.rdfparser.license.ListedLicenses;
 import org.spdx.rdfparser.license.SpdxListedLicense;
 import org.spdx.rdfparser.model.SpdxDocument;

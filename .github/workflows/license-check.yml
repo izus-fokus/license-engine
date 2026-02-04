@@ -27,10 +27,10 @@ jobs:
         run: docker builder prune --force
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag license-engine:0.0.2
+        run: docker build . --file Dockerfile --tag license-engine:0.0.3
 
       - name: Run license engine
-        run: docker run -d --name=license-engine --network=host license-engine:0.0.2
+        run: docker run -d --name=license-engine --network=host license-engine:0.0.3
 
       - name: Sleep for 10 seconds
         run: sleep 10s
@@ -67,7 +67,7 @@ jobs:
 
       - name: Run License Engine with predefined license to be checked against
         if: steps.get_repo_license.outcome == 'success'
-        run: docker run -d --name=license-engine --network=host license-engine:0.0.2 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME -e license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
+        run: docker run -d --name=license-engine --network=host license-engine:0.0.3 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME -e license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
 
       - name: Stop container and remove container
         if: always()
@@ -75,7 +75,7 @@ jobs:
 
       - name: Run License Engine without predefined license to be checked against
         if: steps.get_repo_license.outcome != 'success'
-        run: docker run -d --name=license-engine --network=host license-engine:0.0.2 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME
+        run: docker run -d --name=license-engine --network=host license-engine:0.0.3 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME
 
       - name: Clear the cache
         run: docker image prune --all --force

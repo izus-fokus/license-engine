@@ -11,13 +11,13 @@
 	</parent>
 	<groupId>resus</groupId>
 	<artifactId>licenseengine</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<name>ReSUS License-Engine</name>
 	<description>License-Engine for ReSUS project.</description>
 
 	<properties>
 		<java.version>17</java.version>
-		<spdx.version>2.2.8</spdx.version>
+		<spdx.version>2.0.4</spdx.version>
 		<cxf.version>4.1.4</cxf.version>
 		<springdoc.version>2.8.15</springdoc.version>
 		<openapitools.version>5.2.0</openapitools.version>
@@ -27,7 +27,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.spdx</groupId>
-			<artifactId>spdx-tools</artifactId>
+			<artifactId>java-spdx-library</artifactId>
 			<version>${spdx.version}</version>
 			<exclusions>
 				<exclusion>
