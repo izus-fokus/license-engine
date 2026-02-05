@@ -10,11 +10,11 @@ COPY . /licenseengine
 
 RUN git clone "https://$GIT_USER:$REPO_ACCESS_TOKEN@github.com/ffritze/Spdx-Java-Library-Rdf.git"
 
-RUN cd Spdx-Java-Library-Rdf && mvn clean install -DskipTests
+RUN cd Spdx-Java-Library-Rdf && mvn clean install -DskipTests -Dmaven.repo.local=/licenseengine/.m2
 
 RUN cd /licenseengine
 
-RUN mvn clean package -DskipTests   
+RUN mvn clean package -DskipTests -Dmaven.repo.local=/licenseengine/.m2
     
 FROM docker.io/maven:3.9-eclipse-temurin-17-noble
 
