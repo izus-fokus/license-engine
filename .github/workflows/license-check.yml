@@ -27,7 +27,7 @@ jobs:
         run: docker builder prune --force
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag license-engine:0.0.3
+        run: docker build . --file Dockerfile --tag license-engine:0.0.3 --build-arg REPO_ACCESS_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} --build-arg GIT_USER=${{ env.GIT_USER }}
 
       - name: Run license engine
         run: docker run -d --name=license-engine --network=host license-engine:0.0.3
