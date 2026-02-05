@@ -16,7 +16,7 @@ RUN cd /licenseengine
 
 RUN mvn clean package -DskipTests -Dmaven.repo.local=/licenseengine/.m2
     
-FROM docker.io/maven:3.9-eclipse-temurin-17-noble
+FROM dhi.io/maven:3-jdk17-debian13-dev
 
 WORKDIR /licenseengine
 COPY --from=builder /licenseengine /licenseengine
