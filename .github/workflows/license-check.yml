@@ -39,7 +39,7 @@ jobs:
         run: curl -X GET http://localhost:7000/api/v1/health
 
       - name: Run tests
-        run: docker exec -i license-engine /bin/bash -c "mvn test"
+        run: docker exec -i license-engine /bin/bash -c "mvn test -Dmaven.repo.local=/licenseengine/.m2"
 
       - name: Stop container and remove container
         if: always()
