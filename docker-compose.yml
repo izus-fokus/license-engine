@@ -1,7 +1,7 @@
 version: '3'
 services:
     license-engine:
-        image: engine:26.3
+        image: engine:26.4
         container_name: license-engine
         build: .
         depends_on:

@@ -23,8 +23,8 @@ jobs:
         with:
             repository: izus-fokus/license-engine
 
-      - name: Clear the cache
-        run: docker builder prune --force
+      - name: Sleep for 30 seconds
+        run: sleep 30s
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag license-engine:0.0.3 --build-arg REPO_ACCESS_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} --build-arg GIT_USER=${{ vars.GIT_USER }}
+        run: docker build . --file Dockerfile --network=host --tag license-engine:0.0.3 --build-arg REPO_ACCESS_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} --build-arg GIT_USER=${{ vars.GIT_USER }}
 
       - name: Run license engine
         run: docker run -d --name=license-engine --network=host license-engine:0.0.3
