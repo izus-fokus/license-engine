@@ -1,4 +1,4 @@
-FROM docker.io/maven:3.9-eclipse-temurin-17-noble AS builder
+FROM docker.io/maven:3.9-eclipse-temurin-21-noble AS builder
 
 ARG REPO_ACCESS_TOKEN
 ARG GIT_USER
@@ -18,7 +18,7 @@ RUN mvn clean package -Dmaven.repo.local=/licenseengine/.m2
 
 RUN rm -fr /licenseengine/.m2
     
-FROM dhi.io/maven:3-jdk17-debian13-dev
+FROM dhi.io/maven:3-jdk21-debian13-dev
 
 WORKDIR /licenseengine
 COPY --from=builder /licenseengine /licenseengine
