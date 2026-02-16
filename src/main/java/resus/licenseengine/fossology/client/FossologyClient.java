@@ -245,7 +245,7 @@ public class FossologyClient {
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject(), file);
+			Info info = uploadApi.uploadsPost(token, "multipart/form-data", "file", 1, file);
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);

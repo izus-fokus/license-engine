@@ -161,13 +161,15 @@ public interface UploadApi {
 	 */
 	@POST
 	@Path("/uploads")
-	@Consumes({ MediaType.APPLICATION_JSON, MediaType.MULTIPART_FORM_DATA })
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Operation(summary = "Post new upload to FOSSology", tags = {})
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Upload is created", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
 	public Info uploadsPost(@HeaderParam("Authorization") String authorization,
-                            String bodyParam,
-                            @Multipart(value = "fileInput", type = "application/octet-stream") Attachment fileInputDetail);
+							@HeaderParam("Content-Type") String contentType,
+							@Multipart("uploadType") String uploadType,
+							@Multipart("folderId") Integer folderId,
+							@Multipart("fileInput") Attachment fileInput);
 }

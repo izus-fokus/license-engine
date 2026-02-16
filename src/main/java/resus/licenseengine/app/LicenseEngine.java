@@ -20,11 +20,7 @@
 package resus.licenseengine.app;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,15 +92,16 @@ public class LicenseEngine {
 		if (software.getClass().getName().equals("resus.licenseengine.app.model.SoftwareUpload")) {
 			SoftwareUpload softwareUpload = (SoftwareUpload) software;
 			MultivaluedMap<String, String> headers = new MetadataMap<>();
-//        	headers.putSingle("Content-Type", softwareUpload.getAtt().getContentType());
         	headers.putSingle("Content-Type", "application/octet-stream");
 			headers.putSingle("Content-ID", software.getId());
 			try {
-				logger.debug("LicenseEngine in Start Processing function");
-				Attachment att = new Attachment(headers, softwareUpload.getAtt().getInputStream());
-				logger.debug("Attachment {}", att.getContentType());
-				uploadID = fossologyClient.uploadFile(att, software.getName());
-
+				if (Objects.requireNonNull(softwareUpload.getAtt().getOriginalFilename()).endsWith(".zip")) {
+					logger.debug("LicenseEngine in Start Processing function");
+					Attachment att = new Attachment(headers, softwareUpload.getAtt().getInputStream());
+					logger.debug("Attachment {}", att.getContentType());
+					String fileName = softwareUpload.getAtt().getOriginalFilename();
+					uploadID = fossologyClient.uploadFile(att, fileName);
+				}
 			} catch (Exception e) {
 				logger.warn("Uploading software to fossology failed: {}", e.toString());
 
