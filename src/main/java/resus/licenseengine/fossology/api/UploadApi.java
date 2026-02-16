@@ -161,8 +161,8 @@ public interface UploadApi {
 	 */
 	@POST
 	@Path("/uploads")
-	@Consumes({ "application/json", "multipart/form-data" })
-	@Produces({ "application/json" })
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.MULTIPART_FORM_DATA })
+	@Produces({ MediaType.APPLICATION_JSON })
 	@Operation(summary = "Post new upload to FOSSology", tags = {})
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Upload is created", content = @Content(schema = @Schema(implementation = Info.class))),
