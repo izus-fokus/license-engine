@@ -20,6 +20,7 @@
 package resus.licenseengine.fossology.client;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import jakarta.ws.rs.InternalServerErrorException;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -224,11 +227,11 @@ public class FossologyClient {
 	 * 
 	 * Uploads a software from a given URL to fossology.
 	 * 
-	 * @param file        where the software is located
+	 * @param fileInput        where the software is located
 	 * @param description
 	 * @return the ID of this upload job
 	 */
-	public Integer uploadFile(Attachment file, String description) {
+	public Integer uploadFile(InputStream fileInput, String description) {
 
         UploadRequest uploadRequest = new UploadRequest();
         uploadRequest.setUploadType("file");
@@ -238,14 +241,23 @@ public class FossologyClient {
         uploadRequest.setIgnoreScm(true);
         uploadRequest.setGroupName(null);
 
-		logger.debug("Uploading software...: {} from file with : {}.", description, file.hashCode());
-		logger.debug("File Content-Type: {} Content-ID: {}", file.getContentType(), file.getContentId());
+		logger.debug("Uploading software...: {} from file with : {}.", description, fileInput.hashCode());
+//		logger.debug("File Content-Type: {} Content-ID: {}", fileInput, fileInput.getContentId());
 		Integer id = null;
+
+		ContentDisposition contentDisposition = new ContentDisposition("attachment;filename=" + description);
+
+		List<Attachment> attachments = new ArrayList<>();
+		attachments.add(new Attachment("uploadType", "text/plain", "file"));
+		attachments.add(new Attachment("folderId", "text/plain", "1"));
+		attachments.add(new Attachment("fileInput", fileInput,
+				new ContentDisposition("form-data; name=\"fileInput\"; filename=\"fileInput\"")));
+		MultipartBody body = new MultipartBody(attachments);
 
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = uploadApi.uploadsPost(token, "multipart/form-data", "file", 1, file);
+			Info info = uploadApi.uploadsPost(token, body);
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);

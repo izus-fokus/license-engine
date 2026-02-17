@@ -1,5 +1,6 @@
 package resus.licenseengine.fossology.api;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -24,6 +25,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import resus.licenseengine.fossology.model.Info;
 import resus.licenseengine.fossology.model.Upload;
 import resus.licenseengine.fossology.model.UploadLicenses;
@@ -168,8 +170,5 @@ public interface UploadApi {
 			@ApiResponse(responseCode = "201", description = "Upload is created", content = @Content(schema = @Schema(implementation = Info.class))),
 			@ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
 	public Info uploadsPost(@HeaderParam("Authorization") String authorization,
-							@HeaderParam("Content-Type") String contentType,
-							@Multipart("uploadType") String uploadType,
-							@Multipart("folderId") Integer folderId,
-							@Multipart("fileInput") Attachment fileInput);
+							MultipartBody body);
 }

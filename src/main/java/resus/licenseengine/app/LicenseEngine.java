@@ -100,7 +100,7 @@ public class LicenseEngine {
 					Attachment att = new Attachment(headers, softwareUpload.getAtt().getInputStream());
 					logger.debug("Attachment {}", att.getContentType());
 					String fileName = softwareUpload.getAtt().getOriginalFilename();
-					uploadID = fossologyClient.uploadFile(att, fileName);
+					uploadID = fossologyClient.uploadFile(softwareUpload.getAtt().getInputStream(), fileName);
 				}
 			} catch (Exception e) {
 				logger.warn("Uploading software to fossology failed: {}", e.toString());
