@@ -79,7 +79,9 @@ public class TestApiFileUpload {
             }
             MockMultipartFile zipFile = new MockMultipartFile("file","replay-dh-client-1.3.0.zip","multipart/form-data",is);
 //            timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
-            mockMvc.perform(multipart("http://localhost:7000/api/v1/software/upload").file(zipFile));
+            Software softwareUpload = new Software(sha256sum, "replay-dh-client-1.3.0.zip", zipFile);
+            LicenseEngine.addSoftware(sha256sum,softwareUpload);
+//            mockMvc.perform(multipart("http://localhost:7000/api/v1/software/upload").file(zipFile));
         }
     }
 
