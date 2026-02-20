@@ -175,6 +175,8 @@ public class SoftwareController {
 			}
 
 			return ResponseEntity.ok(software.getStatus());
+		} else if (softwareID != null) {
+			return ResponseEntity.ok(ProcessingStatus.WAITING);
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
