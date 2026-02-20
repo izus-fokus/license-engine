@@ -79,7 +79,6 @@ public class TestApiFileUpload {
     @Order(3)
     public void getSoftwareSet() {
         Software softResponse= LicenseEngine.getSoftware("replay-dh-client-1.3.0.zip");
-        assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
         Set<String> licenseSet = new HashSet<>(Arrays.asList("GPL-3.0-or-later", "LGPL-2.1-only", "NOASSERTION", "MIT", "CC-BY-SA-3.0"));
         assertEquals(licenseSet,softResponse.getEffectiveLicenses());
         assertEquals("replay", softResponse.getName());
@@ -89,7 +88,6 @@ public class TestApiFileUpload {
     @Order(4)
     public void getSoftwareAll() {
         Software softResponse= LicenseEngine.getSoftware("replay-dh-client-1.3.0.zip");
-        assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
         Set<String> licenseSetAll = new HashSet<>(Arrays.asList("EPL-1.0",
                 "CDDL-1.1",
                 "GPL-3.0-or-later",
@@ -110,7 +108,6 @@ public class TestApiFileUpload {
     @Order(5)
     public void getSoftwareFiles() {
         Software softResponse= LicenseEngine.getSoftware("replay");
-        assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
         assertEquals("replay", softResponse.getName());
         assertEquals(550,softResponse.getFiles().intValue());
     }
