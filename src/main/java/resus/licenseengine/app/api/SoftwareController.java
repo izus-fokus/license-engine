@@ -50,6 +50,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import resus.licenseengine.app.LicenseEngine;
 import resus.licenseengine.app.model.ProcessingStatus;
 import resus.licenseengine.app.model.Software;
+import resus.licenseengine.app.model.SoftwareUpload;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -131,7 +132,7 @@ public class SoftwareController {
 		// InputStream is = fileUpload.getInputStream();
 		// Attachment att = new Attachment(is, headers);
 
-		Software software = new Software(id, name, fileUpload);
+		SoftwareUpload software = new SoftwareUpload(id, name, fileUpload);
 		String softwareID = software.getId();
 		logger.debug("Creating new software with ID {}...", softwareID);
 		logger.debug("File information {}", fileUpload.getName());
@@ -174,8 +175,6 @@ public class SoftwareController {
 			}
 
 			return ResponseEntity.ok(software.getStatus());
-		} else if (softwareID != null) {
-			return ResponseEntity.ok(ProcessingStatus.WAITING);
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}

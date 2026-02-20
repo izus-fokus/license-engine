@@ -20,6 +20,6 @@
 package resus.licenseengine.app.model;
 
 public enum ProcessingStatus {
-	QUEUED, UPLOADING, ANALYZING, FINISHED, FAILED, WAITING
+	QUEUED, UPLOADING, ANALYZING, FINISHED, FAILED
 
 }

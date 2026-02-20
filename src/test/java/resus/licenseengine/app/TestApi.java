@@ -1,52 +1,36 @@
 package resus.licenseengine.app;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+
 import resus.licenseengine.app.model.Software;
-
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.logging.Logger;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@AutoConfigureMockMvc
 public class TestApi {
 
     private static final Logger logger = Logger.getLogger(TestApi.class.getCanonicalName());
-
-    @Autowired
-    private MockMvc mockMvc;
-
-
-    Timer timer = new Timer();
-
-    TimerTask repeatedTask = new TimerTask() {
-        @Override
-        public void run() {
-            try {
-                MvcResult result = mockMvc.perform(get("http://localhost:7000/api/v1/software/status/replay")).andReturn();
-                logger.info("Response is " + result.getResponse().getContentAsString());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    };
 
     @BeforeAll
     public static void setUpClass() {

@@ -25,13 +25,10 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import org.springframework.web.multipart.MultipartFile;
 
 public class Software {
 
 	private final String unknownLicense = "UNKNOWN LICENSE";
-
-	private MultipartFile att;
 
 	@JsonProperty(required = true)
 	private String id;
@@ -64,25 +61,6 @@ public class Software {
 	public Software(String id, String name, String url) {
 		this(id, name);
 		this.url = url;
-	}
-
-	public Software(String id, String name, MultipartFile att) {
-		this(id, name);
-		this.att = att;
-	}
-
-	/**
-	 * @return the attachment
-	 */
-	public MultipartFile getAtt() {
-		return att;
-	}
-
-	/**
-	 * @param att the attachment to set
-	 */
-	public void setAtt(MultipartFile att) {
-		this.att = att;
 	}
 
 	@JsonProperty(value = "licensesAll", access = Access.READ_ONLY)

@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import resus.licenseengine.app.model.License;
 import resus.licenseengine.app.model.ProcessingStatus;
 import resus.licenseengine.app.model.Software;
+import resus.licenseengine.app.model.SoftwareUpload;
 import resus.licenseengine.fossology.client.FossologyClient;
 import resus.licenseengine.recommender.client.LicenseRecommenderClient;
 import resus.licenseengine.utils.LicenseUtils;
@@ -88,17 +89,18 @@ public class LicenseEngine {
 
 		Integer uploadID = null;
 		logger.debug("LicenseEngine in Start Processing function {}", software.getClass().getName());
-		if (software.getAtt() != null) {
+		if (software.getClass().getName().equals("resus.licenseengine.app.model.SoftwareUpload")) {
+			SoftwareUpload softwareUpload = (SoftwareUpload) software;
 			MultivaluedMap<String, String> headers = new MetadataMap<>();
         	headers.putSingle("Content-Type", "application/octet-stream");
 			headers.putSingle("Content-ID", software.getId());
 			try {
-				if (Objects.requireNonNull(software.getAtt().getOriginalFilename()).endsWith(".zip")) {
+				if (Objects.requireNonNull(softwareUpload.getAtt().getOriginalFilename()).endsWith(".zip")) {
 					logger.debug("LicenseEngine in Start Processing function");
-					Attachment att = new Attachment(headers, software.getAtt().getInputStream());
+					Attachment att = new Attachment(headers, softwareUpload.getAtt().getInputStream());
 					logger.debug("Attachment {}", att.getContentType());
-					String fileName = software.getAtt().getOriginalFilename();
-					uploadID = fossologyClient.uploadFile(software.getAtt().getInputStream(), fileName);
+					String fileName = softwareUpload.getAtt().getOriginalFilename();
+					uploadID = fossologyClient.uploadFile(softwareUpload.getAtt().getInputStream(), fileName);
 				}
 			} catch (Exception e) {
 				logger.warn("Uploading software to fossology failed: {}", e.toString());
