@@ -53,15 +53,21 @@ public class Software {
 	@JsonIgnore
 	private List<String> filesWithUnknownLicense = new ArrayList<String>();
 
-	public Software(String id, String name, String url) {
+	protected Software() {}
+
+	public Software(String id, String name) {
 		this.id = id;
 		this.name = name;
+	}
+
+
+	public Software(String id, String name, String url) {
+		this(id, name);
 		this.url = url;
 	}
 
 	public Software(String id, String name, MultipartFile att) {
-		this.id = id;
-		this.name = name;
+		this(id, name);
 		this.att = att;
 	}
 

@@ -1,5 +1,6 @@
 package resus.licenseengine.app;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,8 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -28,6 +30,8 @@ public class TestApiFileUpload {
     private static final Logger logger = Logger.getLogger(TestApiFileUpload.class.getCanonicalName());
     @Autowired
     private MockMvc mockMvc;
+
+    private String md5Hash;
 
 
     Timer timer = new Timer();
@@ -67,18 +71,24 @@ public class TestApiFileUpload {
             if (is == null) {
                 throw new IllegalArgumentException("Ressource nicht gefunden!");
             }
-            MockMultipartFile zipFile = new MockMultipartFile("replay-dh-client-1.3.0.zip","replay-dh-client-1.3.0.zip","application/zip",is);
+            try {
+                md5Hash = DigestUtils.md5Hex(is);
+            }
+            catch (Exception e) {
+                logger.info("MD5 Hash could not be calculated from Input Stream: replay-dh-client-1.3.0.zip");
+                md5Hash = UUID.randomUUID().toString();
+            }
+            MockMultipartFile zipFile = new MockMultipartFile("file","replay-dh-client-1.3.0.zip","application/zip",is);
             Software softwareUpload = new Software("replay-dh-client-1.3.0.zip", "replay-dh-client-1.3.0.zip", zipFile);
             timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
-            LicenseEngine.startProcessing(softwareUpload);
-            LicenseEngine.addSoftware("replay",softwareUpload);
+            mockMvc.perform(multipart("http://localhost:7000/api/v1/software/upload").file(zipFile)).andExpect(status().isOk());
         }
     }
 
     @Test
     @Order(3)
     public void getSoftwareSet() {
-        Software softResponse= LicenseEngine.getSoftware("replay-dh-client-1.3.0.zip");
+        Software softResponse= LicenseEngine.getSoftware(md5Hash);
         Set<String> licenseSet = new HashSet<>(Arrays.asList("GPL-3.0-or-later", "LGPL-2.1-only", "NOASSERTION", "MIT", "CC-BY-SA-3.0"));
         assertEquals(licenseSet,softResponse.getEffectiveLicenses());
         assertEquals("replay", softResponse.getName());
@@ -87,7 +97,7 @@ public class TestApiFileUpload {
     @Test
     @Order(4)
     public void getSoftwareAll() {
-        Software softResponse= LicenseEngine.getSoftware("replay-dh-client-1.3.0.zip");
+        Software softResponse= LicenseEngine.getSoftware(md5Hash);
         Set<String> licenseSetAll = new HashSet<>(Arrays.asList("EPL-1.0",
                 "CDDL-1.1",
                 "GPL-3.0-or-later",
@@ -107,7 +117,7 @@ public class TestApiFileUpload {
     @Test
     @Order(5)
     public void getSoftwareFiles() {
-        Software softResponse= LicenseEngine.getSoftware("replay");
+        Software softResponse= LicenseEngine.getSoftware(md5Hash);
         assertEquals("replay", softResponse.getName());
         assertEquals(550,softResponse.getFiles().intValue());
     }
