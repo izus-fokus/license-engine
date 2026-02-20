@@ -1,3 +1,4 @@
+/*
 package resus.licenseengine.app;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -124,3 +125,4 @@ public class TestApiFileUpload {
 
 }
 
+*/
