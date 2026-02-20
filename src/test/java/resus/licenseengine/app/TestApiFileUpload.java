@@ -40,7 +40,7 @@ public class TestApiFileUpload {
         @Override
         public void run() {
             try {
-                MvcResult result = mockMvc.perform(get("http://localhost:7000/api/v1/software/status/replay")).andReturn();
+                MvcResult result = mockMvc.perform(get("http://localhost:7000/api/v1/software/status/"+sha256sum)).andReturn();
                 logger.info("Response is " + result.getResponse().getContentAsString());
             } catch (Exception e) {
                 throw new RuntimeException(e);
