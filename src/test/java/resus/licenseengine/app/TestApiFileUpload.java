@@ -31,7 +31,7 @@ public class TestApiFileUpload {
     @Autowired
     private MockMvc mockMvc;
 
-    private String md5Hash;
+    private String sha256sum;
 
 
     Timer timer = new Timer();
@@ -72,13 +72,13 @@ public class TestApiFileUpload {
                 throw new IllegalArgumentException("Ressource nicht gefunden!");
             }
             try {
-                md5Hash = DigestUtils.md5Hex(is);
+                sha256sum = DigestUtils.sha256Hex(is);
             }
             catch (Exception e) {
                 logger.info("MD5 Hash could not be calculated from Input Stream: replay-dh-client-1.3.0.zip");
-                md5Hash = UUID.randomUUID().toString();
+                sha256sum = UUID.randomUUID().toString();
             }
-            MockMultipartFile zipFile = new MockMultipartFile("file","replay-dh-client-1.3.0.zip","application/zip",is);
+            MockMultipartFile zipFile = new MockMultipartFile("file","replay-dh-client-1.3.0.zip","multipart/form-data",is);
             Software softwareUpload = new Software("replay-dh-client-1.3.0.zip", "replay-dh-client-1.3.0.zip", zipFile);
             timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
             mockMvc.perform(multipart("http://localhost:7000/api/v1/software/upload").file(zipFile)).andExpect(status().isOk());
@@ -88,7 +88,7 @@ public class TestApiFileUpload {
     @Test
     @Order(3)
     public void getSoftwareSet() {
-        Software softResponse= LicenseEngine.getSoftware(md5Hash);
+        Software softResponse= LicenseEngine.getSoftware(sha256sum);
         Set<String> licenseSet = new HashSet<>(Arrays.asList("GPL-3.0-or-later", "LGPL-2.1-only", "NOASSERTION", "MIT", "CC-BY-SA-3.0"));
         assertEquals(licenseSet,softResponse.getEffectiveLicenses());
         assertEquals("replay", softResponse.getName());
@@ -97,7 +97,7 @@ public class TestApiFileUpload {
     @Test
     @Order(4)
     public void getSoftwareAll() {
-        Software softResponse= LicenseEngine.getSoftware(md5Hash);
+        Software softResponse= LicenseEngine.getSoftware(sha256sum);
         Set<String> licenseSetAll = new HashSet<>(Arrays.asList("EPL-1.0",
                 "CDDL-1.1",
                 "GPL-3.0-or-later",
@@ -117,7 +117,7 @@ public class TestApiFileUpload {
     @Test
     @Order(5)
     public void getSoftwareFiles() {
-        Software softResponse= LicenseEngine.getSoftware(md5Hash);
+        Software softResponse= LicenseEngine.getSoftware(sha256sum);
         assertEquals("replay", softResponse.getName());
         assertEquals(550,softResponse.getFiles().intValue());
     }

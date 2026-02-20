@@ -19,10 +19,7 @@
 
 package resus.licenseengine.app.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import jakarta.ws.rs.core.MediaType;
 
@@ -118,19 +115,19 @@ public class SoftwareController {
 					"No running fossology instance for checking the licenses can be found or is accessible. Processing aborted!");
 		}
 
-		String md5Hash;
+		String sha256sum;
 		try {
-			md5Hash = DigestUtils.md5Hex(fileUpload.getInputStream());
+			sha256sum = DigestUtils.sha256Hex(fileUpload.getInputStream());
 		}
 		catch (Exception e) {
 			logger.warn("MD5 Hash could not be calculated from Input Stream: {}", e.toString());
-			md5Hash = UUID.randomUUID().toString();
+			sha256sum = UUID.randomUUID().toString();
 		}
 		
 
 
-		String id = md5Hash;
-		String name = "uploaded_" + md5Hash;
+		String id = sha256sum;
+		String name = "uploaded_" + sha256sum;
 		// InputStream is = fileUpload.getInputStream();
 		// Attachment att = new Attachment(is, headers);
 
