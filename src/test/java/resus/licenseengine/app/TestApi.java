@@ -77,7 +77,7 @@ public class TestApi {
             Software software = new Software(jsonObject.get("id").getAsString(),
                     jsonObject.get("name").getAsString(),
                     jsonObject.get("url").getAsString());
-            timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
+//            timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
             LicenseEngine.startProcessing(software);
             LicenseEngine.addSoftware("replay",software);
         }
