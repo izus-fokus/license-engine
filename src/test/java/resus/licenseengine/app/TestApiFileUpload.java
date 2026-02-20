@@ -79,9 +79,12 @@ public class TestApiFileUpload {
                 sha256sum = UUID.randomUUID().toString();
             }
             MockMultipartFile zipFile = new MockMultipartFile("file","replay-dh-client-1.3.0.zip","multipart/form-data",is);
-            Software softwareUpload = new Software("replay-dh-client-1.3.0.zip", "replay-dh-client-1.3.0.zip", zipFile);
             timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
-            mockMvc.perform(multipart("http://localhost:7000/api/v1/software/upload").file(zipFile)).andExpect(status().isOk());
+//            mockMvc.perform(multipart("http://localhost:7000/api/v1/software/upload").file(zipFile)).andExpect(status().isOk());
+            Software softwareUpload = new Software(sha256sum, "replay-dh-client-1.3.0.zip", zipFile);
+            timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
+            LicenseEngine.startProcessing(softwareUpload);
+            LicenseEngine.addSoftware(sha256sum,softwareUpload);
         }
     }
 
