@@ -191,12 +191,22 @@ public class SoftwareController {
 			@ApiResponse(responseCode = "404", content = @Content, description = "Not Found") })
 	public ResponseEntity<Software> getSoftware(@PathVariable("software-id") String softwareID) {
 
-		logger.debug("Requesting the software with ID {}...", softwareID);
-
-		Software software = LicenseEngine.getSoftware(softwareID);
-		if (software != null) {
-			return ResponseEntity.ok(software);
+		if (LicenseEngine.getSoftware(softwareID).getUrl().equals("softwareUpload")) {
+			logger.debug("Requesting the software upload with ID {}...", softwareID);
+			SoftwareUpload software = (SoftwareUpload) LicenseEngine.getSoftware(softwareID);
+			if (software != null) {
+				software.setAtt(null);
+				return ResponseEntity.ok(software);
+			}
+		} else {
+			logger.debug("Requesting the software with ID {}...", softwareID);
+			Software software = LicenseEngine.getSoftware(softwareID);
+			if (software != null) {
+				return ResponseEntity.ok(software);
+			}
 		}
+
+
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
 

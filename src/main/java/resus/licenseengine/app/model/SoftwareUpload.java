@@ -21,25 +21,12 @@ package resus.licenseengine.app.model;
 
 import org.springframework.web.multipart.MultipartFile;
 
-// import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class SoftwareUpload extends Software {
 
-	// private String id;
-
-	// private String name;
 	private MultipartFile att;
-	// @JsonProperty(required = false)
-	// private String url;
-
-	// public SoftwareUpload(String id, String name, String url) {
-	// this.id = id;
-	// this.name = name;
-	// this.url = url;
-	// }
 
 	public SoftwareUpload(String id, String name, MultipartFile attachment) {
-		super(id, name, new String());
+		super(id, name, "softwareUpload");
 		this.setAtt(attachment);
 	}
 
