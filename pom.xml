@@ -21,7 +21,7 @@
 		<maven.compiler.target>21</maven.compiler.target>
 		<spdx.version>2.0.4</spdx.version>
 		<cxf.version>4.2.0</cxf.version>
-		<springdoc.version>2.8.15</springdoc.version>
+		<springdoc.version>3.0.1</springdoc.version>
 		<openapitools.version>5.2.0</openapitools.version>
         <jacksonjakarta.version>3.0.4</jacksonjakarta.version>
 	</properties>
