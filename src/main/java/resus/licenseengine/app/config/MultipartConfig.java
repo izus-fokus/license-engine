@@ -21,12 +21,12 @@ public class MultipartConfig {
         factory.setMaxFileSize(DataSize.parse("50MB"));
 
         // Maximal zulässige Größe einer gesamten Request
-        factory.setMaxRequestSize(DataSize.parse("55MB"));
+        factory.setMaxRequestSize(DataSize.parse("50MB"));
 
         // Optional: Verzeichnis für temporäre Dateien
         factory.setLocation(System.getProperty("java.io.tmpdir"));
 
-        logger.info("Max file size is {}", DataSize.parse("55MB"));
+        logger.info("Max file size is {}", DataSize.parse("50MB"));
 
         return factory.createMultipartConfig();
     }
