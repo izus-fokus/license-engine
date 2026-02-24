@@ -144,22 +144,26 @@ public class LicenseEngine {
 					} else {
 						software.setStatus(ProcessingStatus.FAILED);
 						logger.error("Created report can't be read! Software: {}", id);
+						softwareMap.remove(software.getId());
 					}
 
 				} else {
 					software.setStatus(ProcessingStatus.FAILED);
 					logger.error("Creating report failed! Software: {}", id);
+					softwareMap.remove(software.getId());
 				}
 
 			} else {
 				software.setStatus(ProcessingStatus.FAILED);
 				logger.error("Analyzing failed! Software: {}", id);
+				softwareMap.remove(software.getId());
 			}
 
 		} else {
 			software.setStatus(ProcessingStatus.FAILED);
 			logger.error("Upload failed! Software: {}", id);
-		}
+			softwareMap.remove(software.getId());
+        }
 	}
 
 	/**
