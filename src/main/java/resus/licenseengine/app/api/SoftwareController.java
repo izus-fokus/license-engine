@@ -140,14 +140,12 @@ public class SoftwareController {
 		// InputStream is = fileUpload.getInputStream();
 		// Attachment att = new Attachment(is, headers);
 
-		SoftwareUpload software = new SoftwareUpload(id, name, fileUpload);
+		SoftwareUpload software = new SoftwareUpload(id, name, fileUpload, new FileInputStream(tempFile.toFile()));
 		String softwareID = software.getId();
 		logger.debug("Creating new software with ID {}...", softwareID);
 		logger.debug("File information {}", fileUpload.getName());
 		logger.debug("File information {}", fileUpload.getSize());
 		logger.debug("File information {}", fileUpload.getContentType());
-
-		software.setFileUpload(new FileInputStream(tempFile.toFile()));
 
 		if (LicenseEngine.addSoftware(softwareID, software)) {
 			logger.debug("A new software with ID {} was created.", softwareID);

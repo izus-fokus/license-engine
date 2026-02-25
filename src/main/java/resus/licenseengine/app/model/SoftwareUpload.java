@@ -29,9 +29,10 @@ public class SoftwareUpload extends Software {
 
 	private InputStream fileUpload;
 
-	public SoftwareUpload(String id, String name, MultipartFile attachment) {
+	public SoftwareUpload(String id, String name, MultipartFile attachment, InputStream fileUpload) {
 		super(id, name, "softwareUpload");
 		this.setAtt(attachment);
+		this.setFileUpload(fileUpload);
 	}
 
 	/**
