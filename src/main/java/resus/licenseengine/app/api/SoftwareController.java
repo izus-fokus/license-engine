@@ -63,6 +63,8 @@ public class SoftwareController {
 	@Value("${server.endpoints.software.path}")
 	private String softwareEndpoint;
 
+	private Integer waitingCounter = 0;
+
 	private static final Logger logger = LoggerFactory.getLogger(SoftwareController.class);
 
 	/**
@@ -115,7 +117,7 @@ public class SoftwareController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"No running fossology instance for checking the licenses can be found or is accessible. Processing aborted!");
 		}
-
+		waitingCounter = 0;
 		String sha256sum;
 		try {
 			sha256sum = DigestUtils.sha256Hex(fileUpload.getInputStream());
@@ -175,8 +177,11 @@ public class SoftwareController {
 			}
 
 			return ResponseEntity.ok(software.getStatus());
-		} else if (softwareID != null) {
+		} else if (softwareID != null && waitingCounter < 3) {
+			waitingCounter++;
 			return ResponseEntity.ok(ProcessingStatus.WAITING);
+		} else {
+			LicenseEngine.deleteSoftware(softwareID);
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}

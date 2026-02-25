@@ -21,6 +21,7 @@ RUN rm -fr /licenseengine/.m2
 FROM dhi.io/maven:3-jdk21-debian13-dev
 
 WORKDIR /licenseengine
+RUN mkdir /licenseengine/tmp
 COPY --from=builder /licenseengine /licenseengine
 
 ENTRYPOINT  ["java","-jar","target/licenseengine-0.0.3.jar"]

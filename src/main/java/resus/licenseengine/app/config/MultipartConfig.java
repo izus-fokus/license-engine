@@ -24,7 +24,7 @@ public class MultipartConfig {
         factory.setMaxRequestSize(DataSize.parse("50MB"));
 
         // Optional: Verzeichnis für temporäre Dateien
-        factory.setLocation(System.getProperty("java.io.tmpdir"));
+        factory.setLocation(System.getProperty("/licenseengine/tmp"));
 
         logger.info("Max file size is {}", DataSize.parse("50MB"));
 
