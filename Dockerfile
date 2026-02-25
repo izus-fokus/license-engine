@@ -24,4 +24,4 @@ WORKDIR /licenseengine
 RUN mkdir /licenseengine/tmp
 COPY --from=builder /licenseengine /licenseengine
 
-ENTRYPOINT  ["java","-jar","target/licenseengine-0.0.3.jar"]
+ENTRYPOINT  ["java","-Djava.io.tmpdir=/licenseengine/tmp","-jar","target/licenseengine-0.0.3.jar"]
