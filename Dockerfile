@@ -14,7 +14,7 @@ RUN cd Spdx-Java-Library-Rdf && mvn clean install -DskipTests -Dmaven.repo.local
 
 RUN cd /licenseengine
 
-RUN mvn clean package -Dmaven.repo.local=/licenseengine/.m2
+RUN mvn clean package -Dmaven.repo.local=/licenseengine/.m2 -Djava.io.tmpdir=/licenseengine/tmp
 
 RUN rm -fr /licenseengine/.m2
     
