@@ -19,6 +19,10 @@
 
 package resus.licenseengine.app.api;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import jakarta.ws.rs.core.MediaType;
@@ -111,7 +115,7 @@ public class SoftwareController {
 			@Header(name = HttpHeaders.LOCATION, description = "URL to check the status of the request") }, content = @Content, description = "OK. Request is queued for processing. Check location header."),
 			@ApiResponse(responseCode = "409", content = @Content(schema = @Schema(implementation = Void.class)), description = "Request can't be processed. Check the response message for more information."),
 			@ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = Void.class)), description = "Some unexpected error occurred. Check the response message for more information.") })
-	public ResponseEntity<String> uploadSoftware(@RequestParam("file") MultipartFile fileUpload) {
+	public ResponseEntity<String> uploadSoftware(@RequestParam("file") MultipartFile fileUpload) throws IOException {
 
 		if (!LicenseEngine.isFossologyAvailable()) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -126,8 +130,10 @@ public class SoftwareController {
 			logger.warn("MD5 Hash could not be calculated from Input Stream: {}", e.toString());
 			sha256sum = UUID.randomUUID().toString();
 		}
-		
 
+		Path tempFile = Files.createTempFile(sha256sum, "tmp");
+
+		fileUpload.transferTo(tempFile.toFile());
 
 		String id = sha256sum;
 		String name = "uploaded_" + sha256sum;
@@ -140,6 +146,8 @@ public class SoftwareController {
 		logger.debug("File information {}", fileUpload.getName());
 		logger.debug("File information {}", fileUpload.getSize());
 		logger.debug("File information {}", fileUpload.getContentType());
+
+		software.setFileUpload(new FileInputStream(tempFile.toFile()));
 
 		if (LicenseEngine.addSoftware(softwareID, software)) {
 			logger.debug("A new software with ID {} was created.", softwareID);

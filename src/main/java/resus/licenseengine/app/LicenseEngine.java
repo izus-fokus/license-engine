@@ -97,10 +97,10 @@ public class LicenseEngine {
 			try {
 				if (Objects.requireNonNull(softwareUpload.getAtt().getOriginalFilename()).endsWith(".zip")) {
 					logger.debug("LicenseEngine in Start Processing function");
-					Attachment att = new Attachment(headers, softwareUpload.getAtt().getInputStream());
+					Attachment att = new Attachment(headers, softwareUpload.getFileUpload());
 					logger.debug("Attachment {}", att.getContentType());
 					String fileName = softwareUpload.getAtt().getOriginalFilename();
-					uploadID = fossologyClient.uploadFile(softwareUpload.getAtt().getInputStream(), fileName);
+					uploadID = fossologyClient.uploadFile(softwareUpload.getFileUpload(), fileName);
 				}
 			} catch (Exception e) {
 				logger.warn("Uploading software to fossology failed: {}", e.toString());

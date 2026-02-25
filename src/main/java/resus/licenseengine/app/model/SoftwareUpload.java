@@ -21,9 +21,13 @@ package resus.licenseengine.app.model;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 public class SoftwareUpload extends Software {
 
 	private MultipartFile att;
+
+	private InputStream fileUpload;
 
 	public SoftwareUpload(String id, String name, MultipartFile attachment) {
 		super(id, name, "softwareUpload");
@@ -42,5 +46,13 @@ public class SoftwareUpload extends Software {
 	 */
 	public void setAtt(MultipartFile att) {
 		this.att = att;
+	}
+
+	public InputStream getFileUpload() {
+		return fileUpload;
+	}
+
+	public void setFileUpload(InputStream fileUpload) {
+		this.fileUpload = fileUpload;
 	}
 }
