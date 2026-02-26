@@ -207,6 +207,7 @@ public class SoftwareController {
 			SoftwareUpload software = (SoftwareUpload) LicenseEngine.getSoftware(softwareID);
 			if (software != null) {
 				software.setAtt(null);
+				software.setFileUpload(null);
 				return ResponseEntity.ok(software);
 			}
 		} else {
