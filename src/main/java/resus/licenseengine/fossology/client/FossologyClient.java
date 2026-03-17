@@ -20,15 +20,17 @@
 package resus.licenseengine.fossology.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import jakarta.ws.rs.InternalServerErrorException;
-import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.ProcessingException;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -57,7 +59,23 @@ public class FossologyClient {
 	private final String token;
 
 	/**
-	 * 
+	 * Retries the given call once if a connection-level IOException occurs
+	 * (e.g. "HTTP/1.1 header parser received no bytes" from a stale pooled connection).
+	 */
+	private <T> T withRetry(Supplier<T> call) {
+		try {
+			return call.get();
+		} catch (ProcessingException e) {
+			if (e.getCause() instanceof IOException) {
+				logger.warn("Connection error, retrying: {}", e.getMessage());
+				return call.get();
+			}
+			throw e;
+		}
+	}
+
+	/**
+	 *
 	 * Creates a new client for accessing fossology.
 	 * 
 	 * @param endpoint of fossology
@@ -71,11 +89,8 @@ public class FossologyClient {
 				username, password);
 
         JacksonJsonProvider provider = new JacksonJsonProvider();
-		List<Object> providers = new ArrayList<>();
+		List<JacksonJsonProvider> providers = new ArrayList<>();
 		providers.add(provider);
-		// Disable HTTP keep-alive to prevent stale connection errors ("header parser received no bytes")
-		// when fossology closes idle connections before the client does.
-		providers.add((ClientRequestFilter) ctx -> ctx.getHeaders().putSingle("Connection", "close"));
 		defaultApi = JAXRSClientFactory.create(endpoint, DefaultApi.class, providers);
 		uploadApi = JAXRSClientFactory.create(endpoint, UploadApi.class, providers);
 		jobApi = JAXRSClientFactory.create(endpoint, JobApi.class, providers);
@@ -93,7 +108,7 @@ public class FossologyClient {
 		String version = null;
 
 		try {
-			InlineResponse200 response = defaultApi.versionGet();
+			InlineResponse200 response = withRetry(() -> defaultApi.versionGet());
 			version = response.getVersion();
 		} catch (Exception e) {
 			logger.warn("Can't find a running fossology instance that can be accessed.");
@@ -132,7 +147,7 @@ public class FossologyClient {
         DefaultResponse response = null;
         try {
             assert defaultApi != null;
-            response = defaultApi.tokensPost(tokenReq.toJsonObject());
+            response = withRetry(() -> defaultApi.tokensPost(tokenReq.toJsonObject()));
             token = response.getAuthorization();
 
             logger.debug("Authorization token created: {}", token);
@@ -179,7 +194,7 @@ public class FossologyClient {
 
 		Integer id = null;
 		try {
-			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject());
+			Info info = withRetry(() -> uploadApi.uploadsPost(token, uploadRequest.toJsonObject()));
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -190,7 +205,7 @@ public class FossologyClient {
 	}
 
 	/**
-	 * 
+	 *
 	 * Uploads a software from a given URL to fossology.
 	 * 
 	 * @param url         where the software is located
@@ -217,7 +232,7 @@ public class FossologyClient {
         uploadRequest.setLocation(urlUpload);
 
 		try {
-			Info info = uploadApi.uploadsPost(token, uploadRequest.toJsonObject());
+			Info info = withRetry(() -> uploadApi.uploadsPost(token, uploadRequest.toJsonObject()));
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
 		} catch (InternalServerErrorException e) {
@@ -261,7 +276,7 @@ public class FossologyClient {
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = uploadApi.uploadsPost(token, body);
+			Info info = withRetry(() -> uploadApi.uploadsPost(token, body));
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
@@ -302,7 +317,7 @@ public class FossologyClient {
 		scanOptions.setAnalysis(analysisConfig);
 		scanOptions.setDecider(deciderConfig);
 
-		Info info = jobApi.jobsPost(token, 1, uploadID, scanOptions.toJsonObject());
+		Info info = withRetry(() -> jobApi.jobsPost(token, 1, uploadID, scanOptions.toJsonObject()));
 		Integer id = Integer.parseInt(info.getMessage());
 
 		logger.debug("Starting analyzing the uploaded software with ID: {}. AnalyzeJobID: {}", uploadID, id);
@@ -321,34 +336,42 @@ public class FossologyClient {
 	private boolean waitForJob(Integer uploadJobID, Integer jobID) {
 
 		Job job = null;
-		int eta;
 		String status;
 
 		do {
 			if (uploadJobID != null) {
-				List<Job> jobs = jobApi.jobsGet(token, null, null, uploadJobID);
+				List<Job> jobs = withRetry(() -> jobApi.jobsGet(token, null, null, uploadJobID));
 				if (!jobs.isEmpty()) {
 					job = jobs.get(0);
 				}
 			} else if (jobID != null) {
-				job = jobApi.jobsIdGet(token, jobID);
+				job = withRetry(() -> jobApi.jobsIdGet(token, jobID));
 			}
 
-			eta = job.getEta();
+			if (job == null) {
+				// Job not queued yet; wait and retry
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					throw new RuntimeException("Unexpected interrupt", e);
+				}
+				continue;
+			}
+
 			status = job.getStatus();
+			Integer etaValue = job.getEta();
+			int waitSeconds = (etaValue != null ? etaValue / 4 : 0) + 5;
 
 			try {
-				Thread.sleep((eta / 4 + 5) * 1000); // wait between 5 seconds and eta/4 seconds
+				Thread.sleep(waitSeconds * 1000L);
 			} catch (InterruptedException e) {
 				throw new RuntimeException("Unexpected interrupt", e);
 			}
-		} while (status.equals("Processing") || status.equals("Queued"));
 
-		if (status.equals("Completed")) {
-			return true;
-		}
-
-		return false;
+			if (status == null || (!status.equals("Processing") && !status.equals("Queued"))) {
+				return "Completed".equals(status);
+			}
+		} while (true);
 
 	}
 
@@ -400,7 +423,7 @@ public class FossologyClient {
 	 */
 	public Integer createReport(Integer uploadID) {
 
-		Info info = reportApi.reportGet(token, uploadID, "spdx2");
+		Info info = withRetry(() -> reportApi.reportGet(token, uploadID, "spdx2"));
 		String infoMessage = info.getMessage();
 		Integer id = Integer.parseInt(infoMessage.substring(infoMessage.lastIndexOf("/") + 1));
 
@@ -418,7 +441,7 @@ public class FossologyClient {
 	public File getReport(Integer reportID) {
 
 		logger.debug("Getting the report with ID: uploadID", reportID);
-		return reportApi.reportIdGet(token, reportID);
+		return withRetry(() -> reportApi.reportIdGet(token, reportID));
 
 	}
 
