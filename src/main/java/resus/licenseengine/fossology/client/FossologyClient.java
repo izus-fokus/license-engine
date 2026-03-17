@@ -172,7 +172,7 @@ public class FossologyClient {
 	 * @param description
 	 * @return the ID of this upload job
 	 */
-	public Integer uploadVCS(String vcsUrl, String vcsBranch, String description) {
+	public Integer uploadVCS(String vcsUrl, String vcsBranch, String description, Integer folderId) {
 
         VcsUpload vcsUpload = new VcsUpload();
 		vcsUpload.setVcsBranch(vcsBranch);
@@ -182,7 +182,7 @@ public class FossologyClient {
 
         UploadRequest uploadRequest = new UploadRequest();
         uploadRequest.setUploadType("vcs");
-        uploadRequest.setFolderId(1);
+        uploadRequest.setFolderId(folderId);
         uploadRequest.setUploadDescription(description);
         uploadRequest.set_public("public");
         uploadRequest.setIgnoreScm(true);
@@ -212,7 +212,7 @@ public class FossologyClient {
 	 * @param description
 	 * @return the ID of this upload job
 	 */
-	public Integer uploadURL(String url, String description) {
+	public Integer uploadURL(String url, String description, Integer folderId) {
 
 		UrlUpload urlUpload = new UrlUpload();
 		urlUpload.setName(description);
@@ -224,7 +224,7 @@ public class FossologyClient {
 
         UploadRequest uploadRequest = new UploadRequest();
         uploadRequest.setUploadType("url");
-        uploadRequest.setFolderId(1);
+        uploadRequest.setFolderId(folderId);
         uploadRequest.setUploadDescription(description);
         uploadRequest.set_public("public");
         uploadRequest.setIgnoreScm(true);
@@ -250,11 +250,11 @@ public class FossologyClient {
 	 * @param description
 	 * @return the ID of this upload job
 	 */
-	public Integer uploadFile(InputStream fileInput, String description) {
+	public Integer uploadFile(InputStream fileInput, String description, Integer folderId) {
 
         UploadRequest uploadRequest = new UploadRequest();
         uploadRequest.setUploadType("file");
-        uploadRequest.setFolderId(1);
+        uploadRequest.setFolderId(folderId);
         uploadRequest.setUploadDescription(description);
         uploadRequest.set_public("public");
         uploadRequest.setIgnoreScm(true);
@@ -297,7 +297,7 @@ public class FossologyClient {
 	 * @param uploadID
 	 * @return the ID of this analyze job
 	 */
-	public Integer startAnalyzeJob(Integer uploadID) {
+	public Integer startAnalyzeJob(Integer uploadID, Integer folderId) {
 
 		Analysis analysisConfig = new Analysis();
 		analysisConfig.setBucket(false);
@@ -320,7 +320,7 @@ public class FossologyClient {
 		scanOptions.setAnalysis(analysisConfig);
 		scanOptions.setDecider(deciderConfig);
 
-		Info info = withRetry(() -> jobApi.jobsPost(token, 1, uploadID, scanOptions.toJsonObject()));
+		Info info = withRetry(() -> jobApi.jobsPost(token, folderId, uploadID, scanOptions.toJsonObject()));
 		Integer id = Integer.parseInt(info.getMessage());
 
 		logger.debug("Starting analyzing the uploaded software with ID: {}. AnalyzeJobID: {}", uploadID, id);
