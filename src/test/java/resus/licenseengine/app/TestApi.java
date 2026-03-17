@@ -62,6 +62,8 @@ public class TestApi {
                     jsonObject.get("name").getAsString(),
                     jsonObject.get("url").getAsString());
 //            timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
+            software.setBranch(jsonObject.get("branch").getAsString());
+            software.setFolderId(jsonObject.get("folderId").getAsInt());
             LicenseEngine.startProcessing(software);
             LicenseEngine.addSoftware("replay",software);
         }
@@ -121,6 +123,8 @@ public class TestApi {
             Software software = new Software(jsonObject.get("id").getAsString(),
                     jsonObject.get("name").getAsString(),
                     jsonObject.get("url").getAsString());
+            software.setBranch(jsonObject.get("branch").getAsString());
+            software.setFolderId(jsonObject.get("folderId").getAsInt());
             LicenseEngine.startProcessing(software);
             LicenseEngine.addSoftware("dataverse",software);
         }
