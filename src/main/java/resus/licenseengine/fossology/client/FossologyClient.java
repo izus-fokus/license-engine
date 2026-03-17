@@ -276,7 +276,10 @@ public class FossologyClient {
 		try {
 			logger.debug("Uploading with token {}, description {}", token, description);
 
-			Info info = withRetry(() -> uploadApi.uploadsPost(token, body));
+			// No retry here: the InputStream body can only be read once, so a second
+			// attempt would send an empty body. Stale connections are unlikely on fresh
+			// uploads, and the caller should re-submit on failure.
+			Info info = uploadApi.uploadsPost(token, body);
 			logger.debug("Upload-Info: {}", info);
 			id = Integer.parseInt(info.getMessage());
 			logger.debug("JobID: {}", id);
