@@ -65,7 +65,6 @@ public class TestApi {
             software.setBranch(jsonObject.get("branch").getAsString());
             software.setFolderId(jsonObject.get("folderId").getAsInt());
             LicenseEngine.startProcessing(software);
-            LicenseEngine.addSoftware("replay",software);
         }
     }
 
@@ -126,7 +125,6 @@ public class TestApi {
             software.setBranch(jsonObject.get("branch").getAsString());
             software.setFolderId(jsonObject.get("folderId").getAsInt());
             LicenseEngine.startProcessing(software);
-            LicenseEngine.addSoftware("dataverse",software);
         }
     }
 
