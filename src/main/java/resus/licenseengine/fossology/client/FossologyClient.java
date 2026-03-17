@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.client.ClientRequestFilter;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -70,8 +71,11 @@ public class FossologyClient {
 				username, password);
 
         JacksonJsonProvider provider = new JacksonJsonProvider();
-		List<JacksonJsonProvider> providers = new ArrayList<>();
+		List<Object> providers = new ArrayList<>();
 		providers.add(provider);
+		// Disable HTTP keep-alive to prevent stale connection errors ("header parser received no bytes")
+		// when fossology closes idle connections before the client does.
+		providers.add((ClientRequestFilter) ctx -> ctx.getHeaders().putSingle("Connection", "close"));
 		defaultApi = JAXRSClientFactory.create(endpoint, DefaultApi.class, providers);
 		uploadApi = JAXRSClientFactory.create(endpoint, UploadApi.class, providers);
 		jobApi = JAXRSClientFactory.create(endpoint, JobApi.class, providers);
