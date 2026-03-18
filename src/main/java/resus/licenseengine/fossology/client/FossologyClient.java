@@ -342,7 +342,7 @@ public class FossologyClient {
 
 		List<Attachment> attachments = new ArrayList<>();
 		attachments.add(new Attachment("uploadType", "text/plain", "file"));
-		attachments.add(new Attachment("folderId", "text/plain", "1"));
+		attachments.add(new Attachment("folderId", "text/plain", folderId.toString()));
 		attachments.add(new Attachment("fileInput", fileInput,
 				new ContentDisposition("form-data; name=\"fileInput\"; filename=\"fileInput\"")));
 		MultipartBody body = new MultipartBody(attachments);
