@@ -24,11 +24,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.ProcessingException;
 
@@ -39,10 +42,7 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import resus.licenseengine.fossology.api.DefaultApi;
-import resus.licenseengine.fossology.api.JobApi;
-import resus.licenseengine.fossology.api.ReportApi;
-import resus.licenseengine.fossology.api.UploadApi;
+import resus.licenseengine.fossology.api.*;
 import resus.licenseengine.fossology.model.*;
 import resus.licenseengine.fossology.model.TokenRequestV2.TokenScopeEnum;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
@@ -56,7 +56,10 @@ public class FossologyClient {
 	private final UploadApi uploadApi;
 	private final JobApi jobApi;
 	private final ReportApi reportApi;
+	private final FoldersApi folderApi;
 	private final String token;
+
+	private static final Map<String, Integer> softwareFolders = new HashMap<>();
 
 	/**
 	 * Retries the given call once if a connection-level IOException occurs
@@ -95,6 +98,7 @@ public class FossologyClient {
 		uploadApi = JAXRSClientFactory.create(endpoint, UploadApi.class, providers);
 		jobApi = JAXRSClientFactory.create(endpoint, JobApi.class, providers);
 		reportApi = JAXRSClientFactory.create(endpoint, ReportApi.class, providers);
+		folderApi = JAXRSClientFactory.create(endpoint, FoldersApi.class, providers);
 		token = createToken(username, password);
 	}
 
@@ -172,13 +176,37 @@ public class FossologyClient {
 	 * @param description
 	 * @return the ID of this upload job
 	 */
-	public Integer uploadVCS(String vcsUrl, String vcsBranch, String description, Integer folderId) {
+	public Integer uploadVCS(String vcsUrl, String vcsBranch, String description, String folderName) {
 
         VcsUpload vcsUpload = new VcsUpload();
 		vcsUpload.setVcsBranch(vcsBranch);
 		vcsUpload.setVcsName(description);
 		vcsUpload.setVcsType(VcsUpload.VcsTypeEnum.GIT);
 		vcsUpload.setVcsUrl(vcsUrl);
+
+		Integer folderId = null;
+
+		if (softwareFolders.containsKey(folderName)) {
+			folderId = softwareFolders.get(folderName);
+		} else {
+			try {
+				Info infoFolder = folderApi.foldersPost(token,1,folderName);
+				if (infoFolder.getCode() == 201) {
+					folderId = Integer.parseInt(infoFolder.getMessage());
+					softwareFolders.put(folderName, folderId);
+				} else if (infoFolder.getCode() == 200) {
+					String content  = folderApi.foldersGet(token);
+					JsonArray jsonArray = (JsonArray) JsonParser.parseString(content);
+					Predicate<JsonElement> folderExists = folder -> folder.getAsJsonObject().get("name").getAsString().equals(folderName);
+					folderId = jsonArray.asList().stream().filter(folderExists).findFirst().get().getAsJsonObject().get("id").getAsInt();
+					softwareFolders.put(folderName, folderId);
+				}
+			} catch (Exception e) {
+				logger.warn("Creation of folder failed: {}", e);
+			}
+			folderId = softwareFolders.get(folderName);
+		}
+
 
         UploadRequest uploadRequest = new UploadRequest();
         uploadRequest.setUploadType("vcs");
@@ -212,7 +240,7 @@ public class FossologyClient {
 	 * @param description
 	 * @return the ID of this upload job
 	 */
-	public Integer uploadURL(String url, String description, Integer folderId) {
+	public Integer uploadURL(String url, String description, String folderName) {
 
 		UrlUpload urlUpload = new UrlUpload();
 		urlUpload.setName(description);
@@ -221,6 +249,29 @@ public class FossologyClient {
 		logger.debug("Uploading software...: {} from: {}.", description, url);
 
 		Integer id = null;
+
+		Integer folderId = null;
+
+		if (softwareFolders.containsKey(folderName)) {
+			folderId = softwareFolders.get(folderName);
+		} else {
+			try {
+				Info infoFolder = folderApi.foldersPost(token,1,folderName);
+				if (infoFolder.getCode() == 201) {
+					folderId = Integer.parseInt(infoFolder.getMessage());
+					softwareFolders.put(folderName, folderId);
+				} else if (infoFolder.getCode() == 200) {
+					String content  = folderApi.foldersGet(token);
+					JsonArray jsonArray = (JsonArray) JsonParser.parseString(content);
+					Predicate<JsonElement> folderExists = folder -> folder.getAsJsonObject().get("name").getAsString().equals(folderName);
+					folderId = jsonArray.asList().stream().filter(folderExists).findFirst().get().getAsJsonObject().get("id").getAsInt();
+					softwareFolders.put(folderName, folderId);
+				}
+			} catch (Exception e) {
+				logger.warn("Creation of folder failed: {}", e);
+			}
+			folderId = softwareFolders.get(folderName);
+		}
 
         UploadRequest uploadRequest = new UploadRequest();
         uploadRequest.setUploadType("url");
@@ -250,7 +301,30 @@ public class FossologyClient {
 	 * @param description
 	 * @return the ID of this upload job
 	 */
-	public Integer uploadFile(InputStream fileInput, String description, Integer folderId) {
+	public Integer uploadFile(InputStream fileInput, String description, String folderName) {
+
+		Integer folderId = null;
+
+		if (softwareFolders.containsKey(folderName)) {
+			folderId = softwareFolders.get(folderName);
+		} else {
+			try {
+				Info infoFolder = folderApi.foldersPost(token,1,folderName);
+				if (infoFolder.getCode() == 201) {
+					folderId = Integer.parseInt(infoFolder.getMessage());
+					softwareFolders.put(folderName, folderId);
+				} else if (infoFolder.getCode() == 200) {
+					String content  = folderApi.foldersGet(token);
+					JsonArray jsonArray = (JsonArray) JsonParser.parseString(content);
+					Predicate<JsonElement> folderExists = folder -> folder.getAsJsonObject().get("name").getAsString().equals(folderName);
+					folderId = jsonArray.asList().stream().filter(folderExists).findFirst().get().getAsJsonObject().get("id").getAsInt();
+					softwareFolders.put(folderName, folderId);
+				}
+			} catch (Exception e) {
+				logger.warn("Creation of folder failed: {}", e);
+			}
+			folderId = softwareFolders.get(folderName);
+		}
 
         UploadRequest uploadRequest = new UploadRequest();
         uploadRequest.setUploadType("file");
@@ -297,7 +371,7 @@ public class FossologyClient {
 	 * @param uploadID
 	 * @return the ID of this analyze job
 	 */
-	public Integer startAnalyzeJob(Integer uploadID, Integer folderId) {
+	public Integer startAnalyzeJob(Integer uploadID, String folderName) {
 
 		Analysis analysisConfig = new Analysis();
 		analysisConfig.setBucket(false);
@@ -320,7 +394,15 @@ public class FossologyClient {
 		scanOptions.setAnalysis(analysisConfig);
 		scanOptions.setDecider(deciderConfig);
 
-		Info info = withRetry(() -> jobApi.jobsPost(token, folderId, uploadID, scanOptions.toJsonObject()));
+		Integer folderId;
+
+		if (softwareFolders.containsKey(folderName)) {
+			folderId = softwareFolders.get(folderName);
+		} else {
+            folderId = null;
+        }
+
+        Info info = withRetry(() -> jobApi.jobsPost(token, folderId, uploadID, scanOptions.toJsonObject()));
 		Integer id = Integer.parseInt(info.getMessage());
 
 		logger.debug("Starting analyzing the uploaded software with ID: {}. AnalyzeJobID: {}", uploadID, id);

@@ -37,8 +37,6 @@ public class Software {
 	@JsonProperty(required = true)
 	private String url;
 	@JsonProperty(required = false)
-	private Integer folderId;
-	@JsonProperty(required = false)
 	private String branch;
 	@JsonProperty(access = Access.READ_ONLY)
 	private ProcessingStatus status;
@@ -53,14 +51,6 @@ public class Software {
 	private List<String> filesWithUnknownLicense = new ArrayList<String>();
 
 	protected Software() {}
-
-	public Integer getFolderId() {
-		return folderId;
-	}
-
-	public void setFolderId(Integer folderId) {
-		this.folderId = folderId;
-	}
 
 	public Software(String id, String name) {
 		this.id = id;

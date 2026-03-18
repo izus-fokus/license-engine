@@ -55,8 +55,6 @@ public class LicenseEngine {
 
 	private static final Map<String, Software> softwareMap = new HashMap<>();
 
-	private static Integer folderId = 0;
-
 	/**
 	 * @param fossologyEndpoint
 	 * @param fossologyUsername
@@ -102,7 +100,7 @@ public class LicenseEngine {
 					Attachment att = new Attachment(headers, softwareUpload.getFileUpload());
 					logger.debug("Attachment {}", att.getContentType());
 					String fileName = softwareUpload.getAtt().getOriginalFilename();
-					uploadID = fossologyClient.uploadFile(softwareUpload.getFileUpload(), fileName, software.getFolderId());
+					uploadID = fossologyClient.uploadFile(softwareUpload.getFileUpload(), fileName, id);
 				}
 			} catch (Exception e) {
 				logger.warn("Uploading software to fossology failed: {}", e.toString());
@@ -111,16 +109,16 @@ public class LicenseEngine {
 
 		} else if (software.getBranch() != null || software.getUrl().startsWith("https://github.com/")
 				|| software.getUrl().startsWith("http://github.com/")) {
-			uploadID = fossologyClient.uploadVCS(software.getUrl(), software.getBranch(), software.getName(),software.getFolderId());
+			uploadID = fossologyClient.uploadVCS(software.getUrl(), software.getBranch(), software.getName(),id);
 		} else {
-			uploadID = fossologyClient.uploadURL(software.getUrl(), software.getName(), software.getFolderId());
+			uploadID = fossologyClient.uploadURL(software.getUrl(), software.getName(), id);
 		}
 
 		if (uploadID != null && fossologyClient.waitForUploadJob(uploadID)) {
 
 			software.setStatus(ProcessingStatus.ANALYZING);
 
-			Integer jobID = fossologyClient.startAnalyzeJob(uploadID, software.getFolderId());
+			Integer jobID = fossologyClient.startAnalyzeJob(uploadID, id);
 
 			if (fossologyClient.waitForAnalyzeJob(jobID)) {
 
@@ -190,11 +188,6 @@ public class LicenseEngine {
 		}
 
 		software.setStatus(ProcessingStatus.QUEUED);
-
-		if(!softwareMap.containsKey(id)) {
-			folderId++;
-			software.setFolderId(folderId);
-		}
 
 		softwareMap.put(id, software);
 

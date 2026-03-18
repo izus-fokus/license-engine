@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 import resus.licenseengine.fossology.model.Folder;
 import resus.licenseengine.fossology.model.Info;
 
@@ -28,12 +29,12 @@ public interface FoldersApi  {
      */
     @GET
     @Path("/folders")
-    @Produces({ "application/json" })
+    @Produces({MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the list of accessible folders", tags={  })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "List of folders", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Folder.class)))),
         @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-    public List<Folder> foldersGet();
+    public String foldersGet(@HeaderParam("Authorization") String authorization);
 
     /**
      * Delete a folder
@@ -97,13 +98,13 @@ public interface FoldersApi  {
      */
     @POST
     @Path("/folders")
-    @Produces({ "application/json" })
+    @Produces({MediaType.APPLICATION_JSON })
     @Operation(summary = "Create a new folder", tags={  })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "Folder with the same name already exists under the same parent", content = @Content(schema = @Schema(implementation = Info.class))),
         @ApiResponse(responseCode = "201", description = "Folder is created with new folder id in message", content = @Content(schema = @Schema(implementation = Info.class))),
         @ApiResponse(responseCode = "200", description = "Some error occured. Check the \"message\"", content = @Content(schema = @Schema(implementation = Info.class))) })
-    public Info foldersPost(@HeaderParam("parentFolder") Integer parentFolder,
-                            @QueryParam("folderName") String folderName,
-                            @QueryParam("folderDescription") String folderDescription);
+    public Info foldersPost(@HeaderParam("Authorization") String authorization,
+                            @QueryParam("parentFolder") Integer parentFolder,
+                            @QueryParam("folderName") String folderName);
 }

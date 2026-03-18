@@ -2,6 +2,5 @@
   "id": "dataverse",
   "name": "dataverse",
   "url": "https://github.com/IQSS/dataverse.git",
-  "branch": "develop",
-  "folderId": 2
+  "branch": "develop"
 }

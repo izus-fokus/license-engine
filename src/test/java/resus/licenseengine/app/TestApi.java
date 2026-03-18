@@ -41,7 +41,6 @@ public class TestApi {
         software.setName(jsonObject.get("name").getAsString());
         software.setUrl(jsonObject.get("url").getAsString());
         software.setBranch(jsonObject.get("branch").getAsString());
-        software.setFolderId(jsonObject.get("folderId").getAsInt());
         return software;
     }
 
@@ -72,6 +71,7 @@ public class TestApi {
             JsonElement obj = JsonParser.parseString(content);
             Software software = getSoftware(obj);
             LicenseEngine.startProcessing(software);
+            LicenseEngine.addSoftware("replay", software);
         }
     }
 
@@ -127,6 +127,7 @@ public class TestApi {
             JsonElement obj = JsonParser.parseString(content);
             Software software = getSoftware(obj);
             LicenseEngine.startProcessing(software);
+            LicenseEngine.addSoftware("dataverse", software);
         }
     }
 
