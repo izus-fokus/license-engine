@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,6 +32,17 @@ import resus.licenseengine.app.model.Software;
 public class TestApi {
 
     private static final Logger logger = Logger.getLogger(TestApi.class.getCanonicalName());
+
+    private static @NonNull Software getSoftware(JsonElement obj) {
+        JsonObject jsonObject = obj.getAsJsonObject();
+        Software software = new Software(jsonObject.get("id").getAsString(),
+                jsonObject.get("name").getAsString(),
+                jsonObject.get("url").getAsString());
+        software.setName(jsonObject.get("name").getAsString());
+        software.setUrl(jsonObject.get("url").getAsString());
+        software.setBranch(jsonObject.get("branch").getAsString());
+        return software;
+    }
 
     @BeforeAll
     public static void setUpClass() {
@@ -57,13 +69,9 @@ public class TestApi {
             }
             String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             JsonElement obj = JsonParser.parseString(content);
-            JsonObject jsonObject = obj.getAsJsonObject();
-            Software software = new Software(jsonObject.get("id").getAsString(),
-                    jsonObject.get("name").getAsString(),
-                    jsonObject.get("url").getAsString());
-//            timer.scheduleAtFixedRate(repeatedTask, 0, 10_000);
+            Software software = getSoftware(obj);
             LicenseEngine.startProcessing(software);
-            LicenseEngine.addSoftware("replay",software);
+            LicenseEngine.addSoftware("replay", software);
         }
     }
 
@@ -117,12 +125,9 @@ public class TestApi {
             }
             String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             JsonElement obj = JsonParser.parseString(content);
-            JsonObject jsonObject = obj.getAsJsonObject();
-            Software software = new Software(jsonObject.get("id").getAsString(),
-                    jsonObject.get("name").getAsString(),
-                    jsonObject.get("url").getAsString());
+            Software software = getSoftware(obj);
             LicenseEngine.startProcessing(software);
-            LicenseEngine.addSoftware("dataverse",software);
+            LicenseEngine.addSoftware("dataverse", software);
         }
     }
 
