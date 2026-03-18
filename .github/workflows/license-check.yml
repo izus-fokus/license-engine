@@ -3,9 +3,9 @@ name: License Check
 
 on:
   push:
-    branches: [ "upgrade_spring" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "upgrade_spring" ]
+    branches: [ "main" ]
   
 jobs:
   License-Check:
