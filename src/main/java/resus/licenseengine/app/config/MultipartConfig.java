@@ -14,10 +14,10 @@ public class MultipartConfig {
 
     @Bean
     public MultipartConfigElement multipartConfigElement() {
-        long maxSize = DataSize.parse("50MB").toBytes();
+        long maxSize = DataSize.parse("100MB").toBytes();
         String tmpDir = System.getProperty("java.io.tmpdir");
 
-        logger.info("Max file size is {}", DataSize.parse("50MB"));
+        logger.info("Max file size is {}", DataSize.parse("100MB"));
         logger.info("Tmp dir is {}", tmpDir);
 
         return new MultipartConfigElement(tmpDir, maxSize, maxSize, 0);
