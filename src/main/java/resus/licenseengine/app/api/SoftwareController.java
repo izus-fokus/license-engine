@@ -151,6 +151,7 @@ public class SoftwareController {
 			logger.debug("A new software with ID {} was created.", softwareID);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Location", softwareEndpoint + "/status/" + softwareID);
+			Files.deleteIfExists(tempFile);
 			return new ResponseEntity<String>(headers, HttpStatus.ACCEPTED);
 
 		}
