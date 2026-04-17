@@ -29,7 +29,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.spdx</groupId>
-			<artifactId>java-spdx-library-rdf</artifactId>
+			<artifactId>spdx-java-library-rdf</artifactId>
 			<version>${spdx.version}</version>
 			<exclusions>
 				<exclusion>
