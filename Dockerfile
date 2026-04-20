@@ -8,7 +8,7 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /licenseengine
 COPY . /licenseengine
 
-RUN git clone "https://$GIT_USER:$REPO_ACCESS_TOKEN@github.com/ffritze/Spdx-Java-Library-Rdf.git"
+RUN git clone "https://$GIT_USER:$REPO_ACCESS_TOKEN@github.com/izus-fokus/Spdx-Java-Library-Rdf.git"
 
 RUN cd Spdx-Java-Library-Rdf && mvn clean install -DskipTests -Dmaven.repo.local=/licenseengine/.m2
 
