@@ -1,7 +1,7 @@
 version: '3'
 services:
     license-engine:
-        image: engine:26.2.2
+        image: engine:26.6
         container_name: license-engine
         build: .
         depends_on:
@@ -15,7 +15,7 @@ services:
             - FOSSOLOGY_ENDPOINT_BASE_PATH=http://fossology:80
     fossology:
         container_name: fossologydev
-        image: fossology/fossology:4.6.0
+        image: fossology/fossology:4.7.0
         ports:
             - "127.0.0.1:7100:80"
         networks:
