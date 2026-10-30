@@ -36,10 +36,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --network=host --tag license-engine:0.0.3 --build-arg REPO_ACCESS_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} --build-arg GIT_USER=${{ vars.GIT_USER }}
+        run: docker build . --file Dockerfile --network=host --tag license-engine:latest --build-arg REPO_ACCESS_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} --build-arg GIT_USER=${{ vars.GIT_USER }}
 
       - name: Run license engine
-        run: docker run -d --name=license-engine --network=host license-engine:0.0.3
+        run: docker run -d --name=license-engine --network=host license-engine:latest
 
       - name: Sleep for 10 seconds
         run: sleep 10s
@@ -73,7 +73,7 @@ jobs:
 
       - name: Run License Engine with predefined license to be checked against
         if: steps.get_repo_license.outcome == 'success'
-        run: docker run -d --name=license-engine --network=host license-engine:0.0.3 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME -e license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
+        run: docker run -d --name=license-engine --network=host license-engine:latest -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME -e license=${{ fromJson(steps.get_repo_license.outputs.data).license.spdx_id }}
 
       - name: Stop container and remove container
         if: always()
@@ -81,7 +81,7 @@ jobs:
 
       - name: Run License Engine without predefined license to be checked against
         if: steps.get_repo_license.outcome != 'success'
-        run: docker run -d --name=license-engine --network=host license-engine:0.0.3 -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME
+        run: docker run -d --name=license-engine --network=host license-engine:latest -e repo=$GITHUB_REPOSITORY -e branch=$GITHUB_REF_NAME
 
       - name: Clear the cache
         run: docker image prune --all --force
