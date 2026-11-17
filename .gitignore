@@ -174,4 +174,3 @@ buildNumber.properties
 !.vscode/extensions.json
 
 # End of https://www.gitignore.io/api/java,maven,eclipse,intellij,visualstudiocode
-.env
