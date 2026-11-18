@@ -18,7 +18,7 @@ RUN mvn clean package -Dmaven.repo.local=/licenseengine/.m2 -Djava.io.tmpdir=/li
 
 RUN rm -fr /licenseengine/.m2
     
-FROM dhi.io/maven:3-jdk21-debian13-dev
+FROM dhi.io/maven:3-jdk21-alpine3.23-dev
 
 WORKDIR /licenseengine
 RUN mkdir /licenseengine/tmp
