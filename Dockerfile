@@ -24,4 +24,4 @@ WORKDIR /licenseengine
 RUN mkdir /licenseengine/tmp
 COPY --from=builder /licenseengine /licenseengine
 
-ENTRYPOINT  ["java","-Djava.io.tmpdir=/licenseengine/tmp","-jar","target/licenseengine-0.5.0.jar"]
+ENTRYPOINT  ["java","-XX:+UnlockDiagnosticVMOptions","-XX:-UseBASE64Intrinsics","-Djava.io.tmpdir=/licenseengine/tmp","-jar","target/licenseengine-0.5.0.jar"]
