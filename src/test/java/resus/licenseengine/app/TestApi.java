@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.jspecify.annotations.NonNull;
@@ -80,8 +81,8 @@ public class TestApi {
     public void getSoftwareSet() {
         Software softResponse= LicenseEngine.getSoftware("replay");
         assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
-        Set<String> licenseSet = new HashSet<>(Arrays.asList("GPL-3.0-or-later", "LGPL-2.1-only", "NOASSERTION", "MIT", "CC-BY-SA-3.0"));
-        assertEquals(licenseSet,softResponse.getEffectiveLicenses());
+        Set<String> licenseSet = new TreeSet<>(Arrays.asList("GPL-3.0-or-later", "LGPL-2.1-only", "NOASSERTION", "MIT", "CC-BY-SA-3.0"));
+        assertEquals(licenseSet,new TreeSet<>(softResponse.getEffectiveLicenses()));
         assertEquals("replay", softResponse.getName());
     }
 
@@ -90,7 +91,7 @@ public class TestApi {
     public void getSoftwareAll() {
         Software softResponse= LicenseEngine.getSoftware("replay");
         assertEquals("https://github.com/RePlay-DH/replay-dh-client.git",softResponse.getUrl());
-        Set<String> licenseSetAll = new HashSet<>(Arrays.asList("EPL-1.0",
+        Set<String> licenseSetAll = new TreeSet<>(Arrays.asList("EPL-1.0",
                 "CDDL-1.1",
                 "GPL-3.0-or-later",
                 "LGPL-2.1-only",
@@ -102,7 +103,7 @@ public class TestApi {
                 "CC-BY-SA-3.0",
                 "GPL-2.0-only",
                 "UNKNOWN LICENSE"));
-        assertEquals(licenseSetAll,softResponse.getAllLicenses());
+        assertEquals(licenseSetAll,new TreeSet<>(softResponse.getAllLicenses()));
         assertEquals("replay", softResponse.getName());
     }
 
@@ -136,25 +137,30 @@ public class TestApi {
     public void getSoftwareDataverseSet() {
         Software softResponse= LicenseEngine.getSoftware("dataverse");
         assertEquals("https://github.com/IQSS/dataverse.git",softResponse.getUrl());
-        Set<String> licenseSet = new HashSet<>(Arrays.asList("CC-BY-NC-3.0",
-                "CC-BY-NC-4.0",
-                "CC-BY-NC-SA-4.0",
-                "ODbL-1.0",
-                "CC-BY-4.0",
-                "CC-BY-3.0",
-                "CC-BY-NC-ND-4.0",
-                "NOASSERTION",
-                "JSON",
-                "GPL-2.0-only",
-                "OGL-UK-3.0",
-                "PDDL-1.0",
-                "CC-BY-SA-4.0",
-                "Apache-2.0",
-                "CC0-1.0",
-                "MIT",
-                "CC-BY-ND-4.0",
+        Set<String> licenseSet = new TreeSet<>(Arrays.asList(
+            "CC-BY-NC-3.0",
+                "ODC-By-1.0", 
+                "CC-BY-NC-4.0", 
+                "CC-BY-NC-SA-4.0", 
+                "ODbL-1.0", 
+                "CC-BY-4.0", 
+                "CC-BY-3.0", 
+                "Pixar", 
+                "CC-BY-NC-ND-4.0", 
+                "NOASSERTION", 
+                "JSON", 
+                "etalab-2.0", 
+                "GPL-2.0-only", 
+                "OGL-UK-3.0", 
+                "PDDL-1.0", 
+                "CC-BY-SA-4.0", 
+                "Apache-2.0", 
+                "CC0-1.0", 
+                "MIT", 
+                "CC-BY-ND-4.0", 
+                "EUPL-1.2", 
                 "LGPL-3.0-or-later"));
-        assertEquals(licenseSet,softResponse.getEffectiveLicenses());
+        assertEquals(licenseSet,new TreeSet<>(softResponse.getEffectiveLicenses()));
         assertEquals("dataverse", softResponse.getName());
     }
 
@@ -163,26 +169,31 @@ public class TestApi {
     public void getSoftwareDataverseAll() {
         Software softResponse= LicenseEngine.getSoftware("dataverse");
         assertEquals("https://github.com/IQSS/dataverse.git",softResponse.getUrl());
-        Set<String> licenseSetAll = new HashSet<>(Arrays.asList("CC-BY-NC-3.0",
-                "CC-BY-NC-4.0",
-                "CC-BY-NC-SA-4.0",
-                "ODbL-1.0",
-                "CC-BY-4.0",
-                "CC-BY-3.0",
-                "CC-BY-NC-ND-4.0",
-                "NOASSERTION",
-                "JSON",
-                "GPL-2.0-only",
-                "OGL-UK-3.0",
-                "PDDL-1.0",
-                "CC-BY-SA-4.0",
-                "Apache-2.0",
-                "CC0-1.0",
-                "MIT",
-                "CC-BY-ND-4.0",
-                "UNKNOWN LICENSE",
-                "LGPL-3.0-or-later"));
-        assertEquals(licenseSetAll,softResponse.getAllLicenses());
+        Set<String> licenseSetAll = new TreeSet<>(Arrays.asList(
+            "ODC-By-1.0", 
+                "CC-BY-NC-3.0", 
+                "CC-BY-NC-4.0", 
+                "CC-BY-NC-SA-4.0", 
+                "ODbL-1.0", 
+                "CC-BY-4.0", 
+                "CC-BY-3.0", 
+                "CC-BY-NC-ND-4.0", 
+                "Pixar",
+                "NOASSERTION", 
+                "JSON", 
+                "GPL-2.0-only", 
+                "OGL-UK-3.0", 
+                "PDDL-1.0", 
+                "CC-BY-SA-4.0", 
+                "Apache-2.0", 
+                "CC0-1.0", 
+                "MIT", 
+                "CC-BY-ND-4.0", 
+                "UNKNOWN LICENSE", 
+                "EUPL-1.2", 
+                "LGPL-3.0-or-later",
+                "etalab-2.0"));
+        assertEquals(licenseSetAll,new TreeSet<>(softResponse.getAllLicenses()));
         assertEquals("dataverse", softResponse.getName());
     }
 }
